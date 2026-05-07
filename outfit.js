@@ -16,8 +16,7 @@ let favoriteOutfits =
 const params = new URLSearchParams(window.location.search);
 const outfitId = Number(params.get("id"));
 
-const detailArea =
-  document.getElementById("detailArea");
+const detailArea = document.getElementById("detailArea");
 
 let currentImageIndex = 0;
 
@@ -49,42 +48,39 @@ function toggleFavorite(id) {
   }
 
   saveFavorites();
-
   renderDetail();
 }
 
 function changeMainImage(index) {
   currentImageIndex = index;
-
   renderDetail();
 }
 
-async function deleteOutfit(firebaseId) {
+function copyCode(code) {
+  navigator.clipboard.writeText(code);
 
+  alert("商品コードをコピーしました！");
+}
+
+async function deleteOutfit(firebaseId) {
   if (!confirm("この投稿を削除しますか？")) {
     return;
   }
 
   try {
-
     await deleteDoc(
       doc(db, "outfits", firebaseId)
     );
 
     alert("投稿を削除しました");
-
     location.href = "posts.html";
-
   } catch (error) {
-
     console.error(error);
-
     alert("削除に失敗しました");
   }
 }
 
 async function loadOutfit() {
-
   const q =
     query(
       collection(db, "outfits"),
@@ -103,12 +99,10 @@ async function loadOutfit() {
 }
 
 function renderDetail() {
-
   const outfit =
     outfits.find(item => item.id === outfitId);
 
   if (!outfit) {
-
     detailArea.innerHTML = `
       <p class="empty">
         この投稿は見つかりませんでした。
@@ -124,9 +118,12 @@ function renderDetail() {
 
   const images = getImages(outfit);
 
+  if (currentImageIndex >= images.length) {
+    currentImageIndex = 0;
+  }
+
   const thumbnailHtml =
     images.map((image, index) => {
-
       return `
         <img
           class="thumbnail-image ${index === currentImageIndex ? 'active' : ''}"
@@ -135,7 +132,6 @@ function renderDetail() {
           onclick="changeMainImage(${index})"
         >
       `;
-
     }).join("");
 
   const tagHtml =
@@ -147,7 +143,6 @@ function renderDetail() {
 
   const itemHtml =
     outfit.items.map((item, index) => {
-
       return `
         <div class="detail-item">
 
@@ -156,10 +151,22 @@ function renderDetail() {
           </div>
 
           <div class="detail-item-code">
-            商品コード：${item.code}
+            商品コード：
+            <span class="item-code-text">
+              ${item.code}
+            </span>
+
+            <button
+              type="button"
+              class="small-btn"
+              onclick="copyCode('${item.code}')"
+            >
+              コピー
+            </button>
           </div>
 
           <a
+            class="main-btn"
             href="https://jp.shein.com/pdsearch/${item.code}/"
             target="_blank"
           >
@@ -168,11 +175,9 @@ function renderDetail() {
 
         </div>
       `;
-
     }).join("");
 
   detailArea.innerHTML = `
-
     <img
       class="detail-image"
       src="${images[currentImageIndex]}"
@@ -239,5 +244,6 @@ function renderDetail() {
 window.toggleFavorite = toggleFavorite;
 window.changeMainImage = changeMainImage;
 window.deleteOutfit = deleteOutfit;
+window.copyCode = copyCode;
 
 loadOutfit();
