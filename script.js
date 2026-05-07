@@ -54,6 +54,12 @@ renderPopularTags();
 const params = new URLSearchParams(window.location.search);
 const tag = params.get("tag");
 
+const tagPageTitle = document.getElementById("tagPageTitle");
+
+if (tag && tagPageTitle) {
+  tagPageTitle.textContent = `#${tag} のコーデ一覧`;
+}
+
 if (tag && searchInput) {
   searchInput.value = tag;
   renderOutfits(tag);

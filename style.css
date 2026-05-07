@@ -654,3 +654,10 @@ input:focus {
   font-size: 28px;
   cursor: pointer;
 }
+
+.tag-page-title {
+  margin-top: 8px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+}
