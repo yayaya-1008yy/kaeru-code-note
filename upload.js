@@ -100,18 +100,39 @@ function compressImage(file) {
       const img = new Image();
 
       img.onload = () => {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
+        let maxWidth = 700;
+        let quality = 0.7;
+        let result = "";
 
-        const maxWidth = 800;
-        const scale = img.width > maxWidth ? maxWidth / img.width : 1;
+        while (true) {
+          const canvas = document.createElement("canvas");
+          const ctx = canvas.getContext("2d");
 
-        canvas.width = img.width * scale;
-        canvas.height = img.height * scale;
+          const scale =
+            img.width > maxWidth
+              ? maxWidth / img.width
+              : 1;
 
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          canvas.width = Math.floor(img.width * scale);
+          canvas.height = Math.floor(img.height * scale);
 
-        resolve(canvas.toDataURL("image/jpeg", 0.7));
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+          result = canvas.toDataURL("image/jpeg", quality);
+
+          if (
+            result.length < 150000 ||
+            maxWidth <= 350 ||
+            quality <= 0.35
+          ) {
+            break;
+          }
+
+          maxWidth -= 100;
+          quality -= 0.08;
+        }
+
+        resolve(result);
       };
 
       img.src = e.target.result;
