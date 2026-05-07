@@ -689,3 +689,29 @@ input:focus {
 
   pointer-events: none;
 }
+
+/* 全画面画像をぬるっと表示 */
+
+.image-modal {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+
+.image-modal.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.image-modal img {
+  transform: scale(0.94);
+  opacity: 0;
+  transition:
+    transform 0.22s ease,
+    opacity 0.22s ease;
+}
+
+.image-modal.active img {
+  transform: scale(1);
+  opacity: 1;
+}
