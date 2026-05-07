@@ -6,9 +6,11 @@
   <title>投稿する｜買えるコーデ帳</title>
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <header class="site-header">
+
   <a class="logo" href="index.html">
     KAERU CODE NOTE
   </a>
@@ -17,21 +19,64 @@
     <a href="posts.html">投稿を見る</a>
     <a href="upload.html">投稿する</a>
   </nav>
+
 </header>
 
 <main class="page">
 
   <div class="page-title">
+
     <p class="eyebrow">UPLOAD</p>
 
     <h1>コーデを投稿する</h1>
 
     <p>
-      画像・身長・タグ・SHEIN商品コードを登録できます。
+      ログインして投稿できます。
     </p>
+
   </div>
 
-  <section class="form-box">
+  <!-- ログイン -->
+  <section class="form-box" id="authBox">
+
+    <div class="form-section">
+
+      <h2>ログイン / 会員登録</h2>
+
+      <input
+        id="email"
+        type="email"
+        placeholder="メールアドレス"
+      >
+
+      <input
+        id="password"
+        type="password"
+        placeholder="パスワード"
+      >
+
+      <button
+        type="button"
+        class="main-btn full-btn"
+        id="loginBtn"
+      >
+        ログイン
+      </button>
+
+      <button
+        type="button"
+        class="sub-btn full-btn"
+        id="registerBtn"
+      >
+        新規登録
+      </button>
+
+    </div>
+
+  </section>
+
+  <!-- 投稿フォーム -->
+  <section class="form-box" id="uploadForm" style="display:none;">
 
     <div class="form-section">
 
@@ -42,29 +87,24 @@
         placeholder="コーデ名"
       >
 
-<div class="image-upload-list">
+      <div class="image-upload-list">
 
-  <label>イメージ1</label>
-  <input type="file" class="imageInput" accept="image/*">
+        <label>イメージ1</label>
+        <input type="file" class="imageInput" accept="image/*">
 
-  <label>イメージ2</label>
-  <input type="file" class="imageInput" accept="image/*">
+        <label>イメージ2</label>
+        <input type="file" class="imageInput" accept="image/*">
 
-  <label>イメージ3</label>
-  <input type="file" class="imageInput" accept="image/*">
+        <label>イメージ3</label>
+        <input type="file" class="imageInput" accept="image/*">
 
-</div>
-
-<p class="help">
-  イメージ1は必須です。最大5枚まで登録できます。
-</p>
-
-<div id="imagePreviewList"></div>
+      </div>
 
       <p class="help">
-        画像は複数枚選べます。
-        1枚目が一覧に表示されます。
+        イメージ1は必須です。
       </p>
+
+      <div id="imagePreviewList"></div>
 
       <input
         id="height"
@@ -77,20 +117,18 @@
 
       <h2>タグ</h2>
 
-      <p class="help">
-        タグを入力して「＋タグ追加」を押してください。
-        タグを押すと削除できます。
-      </p>
-
       <input
         id="tagInput"
-        placeholder="例：韓国、低身長、春コーデ"
+        placeholder="例：韓国、低身長"
       >
 
-<button type="button" class="dark-btn" id="tagAddBtn">
-  ＋ タグ追加
-</button>
-
+      <button
+        type="button"
+        class="dark-btn"
+        id="tagAddBtn"
+      >
+        ＋ タグ追加
+      </button>
 
       <div id="tagList"></div>
 
@@ -100,61 +138,41 @@
 
       <h2>着用アイテム</h2>
 
-      <p class="help">
-        商品名とSHEIN商品コードを入れて追加してください。
-      </p>
-
       <input
         id="itemName"
-        placeholder="商品名 例：トップス"
+        placeholder="商品名"
       >
 
       <input
         id="itemCode"
-        placeholder="SHEIN商品コード 例：414417747"
+        placeholder="SHEIN商品コード"
       >
 
-<button type="button" class="dark-btn" id="itemAddBtn">
-  ＋ アイテム追加
-</button>
+      <button
+        type="button"
+        class="dark-btn"
+        id="itemAddBtn"
+      >
+        ＋ アイテム追加
+      </button>
 
       <div id="itemList"></div>
 
     </div>
 
-<button type="button" class="main-btn full-btn" id="outfitAddBtn">
-  コーデを登録する
-</button>
+    <button
+      type="button"
+      class="main-btn full-btn"
+      id="outfitAddBtn"
+    >
+      コーデを登録する
+    </button>
 
   </section>
 
 </main>
 
-<nav class="bottom-nav">
-
-  <a href="index.html">
-    <span>⌂</span>
-    <small>HOME</small>
-  </a>
-
-  <a href="posts.html">
-    <span>⌕</span>
-    <small>POSTS</small>
-  </a>
-
-  <a href="upload.html" class="center-post">
-    <span>＋</span>
-    <small>POST</small>
-  </a>
-
-  <a href="favorites.html">
-    <span>♡</span>
-    <small>LIKE</small>
-  </a>
-
-</nav>
-
-<script type="module" src="./upload.js?v=1"></script>
+<script type="module" src="./upload.js?v=2"></script>
 
 </body>
 </html>
