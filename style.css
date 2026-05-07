@@ -715,3 +715,26 @@ input:focus {
   transform: scale(1);
   opacity: 1;
 }
+
+/* 投稿カードを押した時のぷにっと感 */
+
+.post-card {
+  transition:
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.post-card:active {
+  transform: scale(0.97);
+  box-shadow:
+    0 2px 8px rgba(0,0,0,0.12);
+}
+
+.small-btn:active,
+.main-btn:active,
+.sub-btn:active,
+.back-link:active,
+.favorite-btn:active,
+.delete-btn:active {
+  transform: scale(0.96);
+}
