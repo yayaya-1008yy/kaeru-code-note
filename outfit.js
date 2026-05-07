@@ -174,9 +174,6 @@ function renderDetail() {
         id="swipeImage"
       >
 
-      <p class="swipe-help">
-        ${images.length > 1 ? "← スワイプで画像切替 →" : ""}
-      </p>
     </div>
 
     <div class="thumbnail-list">
