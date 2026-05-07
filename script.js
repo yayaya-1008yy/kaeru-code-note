@@ -269,10 +269,11 @@ function renderOutfits(keyword = "") {
           ${tagHtml}
         </div>
 
-        <p class="card-info">
-          画像 ${imageCount}枚 ／ アイテム ${itemCount}点
-        </p>
-
+<p class="card-info">
+  ♥ ${favoriteOutfits.includes(outfit.id) ? 1 : 0}
+  ／ 画像 ${imageCount}枚
+  ／ アイテム ${itemCount}点
+</p>
         <button
           class="small-btn full-btn"
           onclick="event.stopPropagation(); location.href='outfit.html?id=${outfit.id}'"

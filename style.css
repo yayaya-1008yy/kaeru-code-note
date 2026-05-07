@@ -613,8 +613,12 @@ input:focus {
 
 .card-info {
   margin: 8px 0 12px;
+
   font-size: 12px;
-  color: #999;
+
+  color: #8ecfe8;
+
+  font-weight: 700;
 }
 
 .card-body {
