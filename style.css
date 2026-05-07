@@ -877,3 +877,18 @@ color: #7edcff;
 
   pointer-events: none;
 }
+
+/* 画像だけぬるっと拡大 */
+
+.card-image-wrap {
+  overflow: hidden;
+}
+
+.card-image-wrap img {
+  transition:
+    transform 0.35s ease;
+}
+
+.post-card:hover .card-image-wrap img {
+  transform: scale(1.05);
+}
