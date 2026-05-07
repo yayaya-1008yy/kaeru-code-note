@@ -42,14 +42,27 @@
         placeholder="コーデ名"
       >
 
-<input
-  type="file"
-  id="image"
-  accept="image/*"
->
+<div class="image-upload-list">
+
+  <label>イメージ1</label>
+  <input type="file" class="imageInput" accept="image/*">
+
+  <label>イメージ2</label>
+  <input type="file" class="imageInput" accept="image/*">
+
+  <label>イメージ3</label>
+  <input type="file" class="imageInput" accept="image/*">
+
+  <label>イメージ4</label>
+  <input type="file" class="imageInput" accept="image/*">
+
+  <label>イメージ5</label>
+  <input type="file" class="imageInput" accept="image/*">
+
+</div>
 
 <p class="help">
-  画像は1枚ずつ追加できます。最大5枚まで登録できます。
+  イメージ1は必須です。最大5枚まで登録できます。
 </p>
 
 <div id="imagePreviewList"></div>
