@@ -58,6 +58,15 @@ function copyCode(code) {
 
 function swipeImage(direction) {
   const outfit = outfits.find(item => item.id === outfitId);
+const currentIndex =
+  outfits.findIndex(item => item.id === outfitId);
+
+const prevOutfit =
+  outfits[currentIndex - 1];
+
+const nextOutfit =
+  outfits[currentIndex + 1];
+
   if (!outfit) return;
 
   const images = getImages(outfit);
@@ -212,6 +221,21 @@ function renderDetail() {
     <div class="detail-items">
       <h2>着用アイテム</h2>
       ${itemHtml}
+    </div>
+    <div class="detail-post-nav">
+
+      ${
+        prevOutfit
+          ? `<a class="sub-btn" href="outfit.html?id=${prevOutfit.id}">← 前のコーデ</a>`
+          : `<span></span>`
+      }
+
+      ${
+        nextOutfit
+          ? `<a class="sub-btn" href="outfit.html?id=${nextOutfit.id}">次のコーデ →</a>`
+          : `<span></span>`
+      }
+
     </div>
   `;
 
