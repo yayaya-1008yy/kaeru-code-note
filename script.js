@@ -31,6 +31,24 @@ function getMainImage(outfit) {
     return outfit.images[0];
   }
 
+  if (outfit.image) {
+    return outfit.image;
+  }
+
+  if (outfit.imageUrl) {
+    return outfit.imageUrl;
+  }
+
+  if (outfit.mainImage) {
+    return outfit.mainImage;
+  }
+
+  return "https://placehold.co/600x800?text=NO+IMAGE";
+}
+  if (outfit.images && outfit.images.length > 0) {
+    return outfit.images[0];
+  }
+
   return outfit.image;
 }
 
