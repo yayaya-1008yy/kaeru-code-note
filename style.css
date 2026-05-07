@@ -673,8 +673,7 @@ input:focus {
   position: relative;
 }
 
-.detail-image-wrap::after,
-.post-card::after {
+.detail-image-wrap::after {
   content: "タップで拡大";
   position: absolute;
   bottom: 12px;
