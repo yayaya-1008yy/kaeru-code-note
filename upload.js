@@ -27,6 +27,9 @@ const passwordInput = document.getElementById("password");
 const loginBtn = document.getElementById("loginBtn");
 const registerBtn = document.getElementById("registerBtn");
 
+const loginUserEmail = document.getElementById("loginUserEmail");
+const logoutBtn = document.getElementById("logoutBtn");
+
 const tagInput = document.getElementById("tagInput");
 const tagAddBtn = document.getElementById("tagAddBtn");
 const tagList = document.getElementById("tagList");
@@ -82,6 +85,16 @@ async function login() {
   } catch (error) {
     console.error(error);
     alert("ログインに失敗しました");
+  }
+}
+
+async function logout() {
+  try {
+    await signOut(auth);
+    alert("ログアウトしました");
+  } catch (error) {
+    console.error(error);
+    alert("ログアウトに失敗しました");
   }
 }
 
@@ -293,14 +306,24 @@ onAuthStateChanged(auth, user => {
   if (user) {
     authBox.style.display = "none";
     uploadForm.style.display = "block";
+
+    if (loginUserEmail) {
+      loginUserEmail.textContent = user.email;
+    }
+
   } else {
     authBox.style.display = "block";
     uploadForm.style.display = "none";
+
+    if (loginUserEmail) {
+      loginUserEmail.textContent = "";
+    }
   }
 });
 
 registerBtn.addEventListener("click", register);
 loginBtn.addEventListener("click", login);
+logoutBtn.addEventListener("click", logout);
 
 tagAddBtn.addEventListener("click", addTag);
 
