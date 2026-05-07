@@ -320,12 +320,7 @@ function renderOutfits(keyword = "") {
     const card = document.createElement("article");
     card.className = "post-card";
 
-    const tagHtml = outfit.tags && outfit.tags.length
-      ? outfit.tags.map(tag =>
-          `<span class="tag" onclick="event.stopPropagation(); searchByTag('${tag}')">#${tag}</span>`
-        ).join("")
-      : "";
-
+card.innerHTML = `
   <img src="${getMainImage(outfit)}" alt="${outfit.title}">
 
   <div class="card-body">
@@ -342,6 +337,28 @@ function renderOutfits(keyword = "") {
       </button>
 
     </div>
+
+    <p class="card-height">
+      ${outfit.height}
+    </p>
+
+    <div class="card-tags">
+      ${tagHtml}
+    </div>
+
+    <p class="card-info">
+      画像 ${outfit.images ? outfit.images.length : 1}枚 ／ アイテム ${outfit.items.length}点
+    </p>
+
+    <button
+      class="small-btn full-btn"
+      onclick="event.stopPropagation(); location.href='outfit.html?id=${outfit.id}'"
+    >
+      詳しく見る
+    </button>
+
+  </div>
+`;
 
     <p class="card-height">
       ${outfit.height}
