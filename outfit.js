@@ -178,11 +178,12 @@ function renderDetail() {
     }).join("");
 
   detailArea.innerHTML = `
-    <img
-      class="detail-image"
-      src="${images[currentImageIndex]}"
-      alt="${outfit.title}"
-    >
+<img
+  class="detail-image"
+  src="${images[currentImageIndex]}"
+  alt="${outfit.title}"
+  onclick="openImageModal('${images[currentImageIndex]}')"
+>
 
     <div class="thumbnail-list">
       ${thumbnailHtml}
@@ -247,3 +248,26 @@ window.deleteOutfit = deleteOutfit;
 window.copyCode = copyCode;
 
 loadOutfit();
+
+function openImageModal(src) {
+  const modal = document.getElementById("imageModal");
+  const modalImage = document.getElementById("modalImage");
+
+  modalImage.src = src;
+  modal.classList.add("active");
+}
+
+function closeImageModal() {
+  const modal = document.getElementById("imageModal");
+  modal.classList.remove("active");
+}
+
+window.openImageModal = openImageModal;
+
+document.getElementById("modalCloseBtn").addEventListener("click", closeImageModal);
+
+document.getElementById("imageModal").addEventListener("click", e => {
+  if (e.target.id === "imageModal") {
+    closeImageModal();
+  }
+});
