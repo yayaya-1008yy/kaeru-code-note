@@ -41,44 +41,66 @@ function getMainImage(outfit) {
 async function loadOutfits() {
 
   if (outfitList) {
-
     outfitList.innerHTML =
       `<p class="empty">読み込み中...</p>`;
+  }
+
+  try {
+
+    const q =
+      query(
+        collection(db, "outfits"),
+        orderBy("createdAt", "desc")
+      );
+
+    const snapshot =
+      await getDocs(q);
+
+    outfits =
+      snapshot.docs.map(docItem => ({
+        firebaseId: docItem.id,
+        ...docItem.data()
+      }));
+
+    renderPopularTags();
+
+    const params =
+      new URLSearchParams(window.location.search);
+
+    const tag =
+      params.get("tag");
+
+    const tagPageTitle =
+      document.getElementById("tagPageTitle");
+
+    if (tag && tagPageTitle) {
+      tagPageTitle.textContent =
+        `#${tag} のコーデ一覧`;
+    }
+
+    if (tag && searchInput) {
+      searchInput.value = tag;
+      renderOutfits(tag);
+    } else {
+      renderOutfits();
+    }
+
+  } catch (error) {
+
+    console.error(error);
+
+    if (outfitList) {
+      outfitList.innerHTML = `
+        <p class="empty">
+          投稿の読み込みに失敗しました。<br>
+          少し時間をおいて再読み込みしてください。
+        </p>
+      `;
+    }
 
   }
 
-  const q =
-    query(
-      collection(db, "outfits"),
-      orderBy("createdAt", "desc")
-    );
-
-  const snapshot =
-    await getDocs(q);
-
-  outfits =
-    snapshot.docs.map(docItem => ({
-      firebaseId: docItem.id,
-      ...docItem.data()
-    }));
-
-  renderPopularTags();
-
-  const params =
-    new URLSearchParams(window.location.search);
-
-  const tag =
-    params.get("tag");
-
-  const tagPageTitle =
-    document.getElementById("tagPageTitle");
-
-  if (tag && tagPageTitle) {
-
-    tagPageTitle.textContent =
-      `#${tag} のコーデ一覧`;
-
-  }
+}
 
   if (tag && searchInput) {
 
