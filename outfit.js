@@ -1,4 +1,11 @@
-import { db } from "./firebase.js";
+import {
+  db,
+  auth
+} from "./firebase.js";
+
+import {
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
   collection,
@@ -12,6 +19,8 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 let outfits = [];
+
+let currentUser = null;
 
 let favoriteOutfits =
   JSON.parse(localStorage.getItem("favoriteOutfits")) || [];
@@ -190,7 +199,6 @@ function renderDetail() {
     return;
   }
 
-  // 閲覧数追加
   if (!outfit.viewed) {
 
     outfit.viewed = true;
@@ -308,6 +316,10 @@ function renderDetail() {
 
       </button>
 
+      ${currentUser &&
+      currentUser.uid === outfit.userId
+      ? `
+
       <a
         class="small-btn"
         href="edit.html?id=${outfit.id}"
@@ -321,6 +333,9 @@ function renderDetail() {
       >
         削除する
       </button>
+
+      `
+      : ""}
 
     </div>
 
@@ -390,7 +405,13 @@ window.deleteOutfit =
 window.copyCode =
   copyCode;
 
-loadOutfit();
+onAuthStateChanged(auth, user => {
+
+  currentUser = user;
+
+  loadOutfit();
+
+});
 
 // 全画面画像表示＋左右スワイプ切替
 

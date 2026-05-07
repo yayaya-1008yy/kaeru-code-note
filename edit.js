@@ -1,4 +1,11 @@
-import { db } from "./firebase.js";
+import {
+  db,
+  auth
+} from "./firebase.js";
+
+import {
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 import {
   collection,
@@ -17,8 +24,12 @@ let outfits = [];
 let outfit = null;
 let editTags = [];
 let editItems = [];
+let currentUser = null;
 
 async function loadEditOutfit() {
+  editArea.innerHTML =
+    `<p class="empty">読み込み中...</p>`;
+
   const q = query(
     collection(db, "outfits"),
     orderBy("createdAt", "desc")
@@ -41,8 +52,24 @@ async function loadEditOutfit() {
     return;
   }
 
-  editTags = [...outfit.tags];
-  editItems = [...outfit.items];
+  if (!currentUser) {
+    editArea.innerHTML = `
+      <p class="empty">ログインしてください。</p>
+      <a class="back-link" href="upload.html">ログインページへ</a>
+    `;
+    return;
+  }
+
+  if (currentUser.uid !== outfit.userId) {
+    editArea.innerHTML = `
+      <p class="empty">この投稿は編集できません。</p>
+      <a class="back-link" href="posts.html">投稿一覧に戻る</a>
+    `;
+    return;
+  }
+
+  editTags = outfit.tags ? [...outfit.tags] : [];
+  editItems = outfit.items ? [...outfit.items] : [];
 
   renderEditForm();
 }
@@ -63,13 +90,13 @@ function renderEditForm() {
       <input
         id="editTitle"
         placeholder="コーデ名"
-        value="${outfit.title}"
+        value="${outfit.title || ""}"
       >
 
       <input
         id="editHeight"
         placeholder="身長 例：152cm"
-        value="${outfit.height}"
+        value="${outfit.height || ""}"
       >
 
       <p class="help">画像の変更は次の段階で追加します。</p>
@@ -77,59 +104,87 @@ function renderEditForm() {
       <img
         class="edit-preview-image"
         src="${getMainImage(outfit)}"
-        alt="${outfit.title}"
+        alt="${outfit.title || "コーデ画像"}"
       >
     </div>
 
     <div class="form-section">
       <h2>タグ</h2>
-      <p class="help">タグを入力してEnter。タグを押すと削除できます。</p>
-      <input id="editTagInput" placeholder="例：韓国、低身長、春コーデ">
+
+      <p class="help">
+        タグを入力してEnter。タグを押すと削除できます。
+      </p>
+
+      <input
+        id="editTagInput"
+        placeholder="例：韓国、低身長、春コーデ"
+      >
+
       <div id="editTagList"></div>
     </div>
 
     <div class="form-section">
       <h2>着用アイテム</h2>
 
-      <input id="editItemName" placeholder="商品名 例：トップス">
-      <input id="editItemCode" placeholder="SHEIN商品コード 例：414417747">
+      <input
+        id="editItemName"
+        placeholder="商品名 例：トップス"
+      >
 
-      <button type="button" class="dark-btn" onclick="addEditItem()">
+      <input
+        id="editItemCode"
+        placeholder="SHEIN商品コード 例：414417747"
+      >
+
+      <button
+        type="button"
+        class="dark-btn"
+        onclick="addEditItem()"
+      >
         ＋ アイテム追加
       </button>
 
       <div id="editItemList"></div>
     </div>
 
-    <button class="main-btn full-btn" onclick="saveEdit()">
+    <button
+      class="main-btn full-btn"
+      onclick="saveEdit()"
+    >
       編集を保存する
     </button>
   `;
 
-  document.getElementById("editTagInput").addEventListener("keydown", function(e) {
-    if (e.key === "Enter") {
-      e.preventDefault();
+  document
+    .getElementById("editTagInput")
+    .addEventListener("keydown", function(e) {
+      if (e.key === "Enter") {
+        e.preventDefault();
 
-      const tag = this.value.trim();
+        const tag = this.value.trim();
 
-      if (tag && !editTags.includes(tag)) {
-        editTags.push(tag);
-        this.value = "";
-        renderEditTags();
+        if (tag && !editTags.includes(tag)) {
+          editTags.push(tag);
+          this.value = "";
+          renderEditTags();
+        }
       }
-    }
-  });
+    });
 
   renderEditTags();
   renderEditItems();
 }
 
 function renderEditTags() {
-  const editTagList = document.getElementById("editTagList");
+  const editTagList =
+    document.getElementById("editTagList");
+
   editTagList.innerHTML = "";
 
   editTags.forEach((tag, index) => {
-    const span = document.createElement("span");
+    const span =
+      document.createElement("span");
+
     span.className = "tag";
     span.textContent = `#${tag}`;
 
@@ -143,18 +198,27 @@ function renderEditTags() {
 }
 
 function addEditItem() {
-  const nameInput = document.getElementById("editItemName");
-  const codeInput = document.getElementById("editItemCode");
+  const nameInput =
+    document.getElementById("editItemName");
 
-  const name = nameInput.value.trim();
-  const code = codeInput.value.trim();
+  const codeInput =
+    document.getElementById("editItemCode");
+
+  const name =
+    nameInput.value.trim();
+
+  const code =
+    codeInput.value.trim();
 
   if (!name || !code) {
     alert("商品名とSHEIN商品コードを入れてください");
     return;
   }
 
-  editItems.push({ name, code });
+  editItems.push({
+    name,
+    code
+  });
 
   nameInput.value = "";
   codeInput.value = "";
@@ -163,22 +227,26 @@ function addEditItem() {
 }
 
 function renderEditItems() {
-  const editItemList = document.getElementById("editItemList");
+  const editItemList =
+    document.getElementById("editItemList");
+
   editItemList.innerHTML = "";
 
   editItems.forEach((item, index) => {
-    const div = document.createElement("div");
+    const div =
+      document.createElement("div");
+
     div.className = "edit-item-box";
 
     div.innerHTML = `
       <input
-        value="${item.name}"
+        value="${item.name || ""}"
         placeholder="商品名"
         oninput="updateEditItemName(${index}, this.value)"
       >
 
       <input
-        value="${item.code}"
+        value="${item.code || ""}"
         placeholder="商品コード"
         oninput="updateEditItemCode(${index}, this.value)"
       >
@@ -210,8 +278,16 @@ function removeEditItem(index) {
 }
 
 async function saveEdit() {
-  const title = document.getElementById("editTitle").value.trim();
-  const height = document.getElementById("editHeight").value.trim();
+  if (!currentUser || currentUser.uid !== outfit.userId) {
+    alert("この投稿は編集できません");
+    return;
+  }
+
+  const title =
+    document.getElementById("editTitle").value.trim();
+
+  const height =
+    document.getElementById("editHeight").value.trim();
 
   if (!title || !height || editItems.length === 0) {
     alert("コーデ名・身長・アイテムを入れてください");
@@ -219,15 +295,19 @@ async function saveEdit() {
   }
 
   try {
-    await updateDoc(doc(db, "outfits", outfit.firebaseId), {
-      title,
-      height,
-      tags: [...editTags],
-      items: [...editItems]
-    });
+    await updateDoc(
+      doc(db, "outfits", outfit.firebaseId),
+      {
+        title,
+        height,
+        tags: [...editTags],
+        items: [...editItems]
+      }
+    );
 
     alert("編集を保存しました！");
     location.href = `outfit.html?id=${outfitId}`;
+
   } catch (error) {
     console.error(error);
     alert("編集の保存に失敗しました");
@@ -240,4 +320,7 @@ window.updateEditItemCode = updateEditItemCode;
 window.removeEditItem = removeEditItem;
 window.saveEdit = saveEdit;
 
-loadEditOutfit();
+onAuthStateChanged(auth, user => {
+  currentUser = user;
+  loadEditOutfit();
+});
