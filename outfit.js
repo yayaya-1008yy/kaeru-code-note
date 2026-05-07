@@ -248,3 +248,45 @@ window.deleteOutfit = deleteOutfit;
 window.copyCode = copyCode;
 
 loadOutfit();
+
+// 全画面画像表示
+const imageModal =
+  document.getElementById("imageModal");
+
+const modalImage =
+  document.getElementById("modalImage");
+
+const modalClose =
+  document.getElementById("modalClose");
+
+document.addEventListener("click", (e) => {
+
+  const clickedImage =
+    e.target.closest(
+      ".detail-image, .thumbnail-image"
+    );
+
+  if (!clickedImage) return;
+
+  e.stopPropagation();
+
+  modalImage.src =
+    clickedImage.src;
+
+  imageModal.classList.add("active");
+
+});
+
+modalClose.addEventListener("click", () => {
+
+  imageModal.classList.remove("active");
+
+});
+
+imageModal.addEventListener("click", (e) => {
+
+  if (e.target === imageModal) {
+    imageModal.classList.remove("active");
+  }
+
+});

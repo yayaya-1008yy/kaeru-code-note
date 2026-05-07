@@ -7,7 +7,34 @@
   <link rel="stylesheet" href="style.css">
 </head>
 
+<body>
+
+<header class="site-header">
+  <a class="logo" href="index.html">KAERU CODE NOTE</a>
+
+  <nav>
+    <a href="posts.html">投稿を見る</a>
+    <a href="upload.html">投稿する</a>
+  </nav>
+</header>
+
+<main class="page">
+
+  <div class="detail-top">
+    <a class="back-link" href="posts.html">
+      ← 投稿一覧に戻る
+    </a>
+  </div>
+
+  <section
+    id="detailArea"
+    class="detail-page"
+  ></section>
+
+</main>
+
 <nav class="bottom-nav">
+
   <a href="index.html">
     <span>⌂</span>
     <small>HOME</small>
@@ -27,26 +54,25 @@
     <span>♡</span>
     <small>LIKE</small>
   </a>
+
 </nav>
 
-<body>
+<!-- 全画面画像モーダル -->
+<div class="image-modal" id="imageModal">
 
-<header class="site-header">
-  <a class="logo" href="index.html">KAERU CODE NOTE</a>
-  <nav>
-    <a href="posts.html">投稿を見る</a>
-    <a href="upload.html">投稿する</a>
-  </nav>
-</header>
+  <button class="modal-close" id="modalClose">
+    ×
+  </button>
 
-<main class="page">
-  <div class="detail-top">
-    <a class="back-link" href="posts.html">← 投稿一覧に戻る</a>
-  </div>
+  <img
+    id="modalImage"
+    src=""
+    alt=""
+  >
 
-  <section id="detailArea" class="detail-page"></section>
-</main>
+</div>
 
 <script type="module" src="outfit.js"></script>
+
 </body>
 </html>
