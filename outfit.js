@@ -359,3 +359,19 @@ imageModal.addEventListener("click", (e) => {
     imageModal.classList.remove("active");
   }
 });
+
+const modalPrev =
+  document.getElementById("modalPrev");
+
+const modalNext =
+  document.getElementById("modalNext");
+
+modalPrev.addEventListener("click", (e) => {
+  e.stopPropagation();
+  changeModalImage("prev");
+});
+
+modalNext.addEventListener("click", (e) => {
+  e.stopPropagation();
+  changeModalImage("next");
+});
