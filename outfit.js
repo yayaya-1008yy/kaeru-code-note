@@ -249,7 +249,7 @@ window.copyCode = copyCode;
 
 loadOutfit();
 
-// 全画面画像表示
+// 全画面画像表示＋左右スワイプ切替
 const imageModal =
   document.getElementById("imageModal");
 
@@ -259,34 +259,103 @@ const modalImage =
 const modalClose =
   document.getElementById("modalClose");
 
+let modalImageIndex = 0;
+let modalTouchStartX = 0;
+let modalTouchEndX = 0;
+
+function openImageModal(index) {
+  const outfit =
+    outfits.find(item => item.id === outfitId);
+
+  if (!outfit) return;
+
+  const images = getImages(outfit);
+
+  modalImageIndex = index;
+  modalImage.src = images[modalImageIndex];
+
+  imageModal.classList.add("active");
+}
+
+function changeModalImage(direction) {
+  const outfit =
+    outfits.find(item => item.id === outfitId);
+
+  if (!outfit) return;
+
+  const images = getImages(outfit);
+
+  if (images.length <= 1) return;
+
+  if (direction === "next") {
+    modalImageIndex =
+      modalImageIndex < images.length - 1
+        ? modalImageIndex + 1
+        : 0;
+  }
+
+  if (direction === "prev") {
+    modalImageIndex =
+      modalImageIndex > 0
+        ? modalImageIndex - 1
+        : images.length - 1;
+  }
+
+  modalImage.src = images[modalImageIndex];
+}
+
 document.addEventListener("click", (e) => {
 
-  const clickedImage =
-    e.target.closest(
-      ".detail-image, .thumbnail-image"
-    );
+  const mainImage =
+    e.target.closest(".detail-image");
 
-  if (!clickedImage) return;
+  const thumbnailImage =
+    e.target.closest(".thumbnail-image");
+
+  if (!mainImage && !thumbnailImage) return;
 
   e.stopPropagation();
 
-  modalImage.src =
-    clickedImage.src;
+  if (mainImage) {
+    openImageModal(currentImageIndex);
+  }
 
-  imageModal.classList.add("active");
+  if (thumbnailImage) {
+    const thumbnails =
+      Array.from(document.querySelectorAll(".thumbnail-image"));
 
+    const index =
+      thumbnails.indexOf(thumbnailImage);
+
+    openImageModal(index);
+  }
+
+});
+
+modalImage.addEventListener("touchstart", e => {
+  modalTouchStartX =
+    e.changedTouches[0].screenX;
+});
+
+modalImage.addEventListener("touchend", e => {
+  modalTouchEndX =
+    e.changedTouches[0].screenX;
+
+  if (modalTouchStartX - modalTouchEndX > 50) {
+    changeModalImage("next");
+  }
+
+  if (modalTouchEndX - modalTouchStartX > 50) {
+    changeModalImage("prev");
+  }
 });
 
 modalClose.addEventListener("click", () => {
-
   imageModal.classList.remove("active");
-
 });
 
 imageModal.addEventListener("click", (e) => {
-
   if (e.target === imageModal) {
     imageModal.classList.remove("active");
   }
-
 });
