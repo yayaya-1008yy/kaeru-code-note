@@ -7,7 +7,60 @@
   <link rel="stylesheet" href="style.css">
 </head>
 
+<body>
+
+<header class="site-header">
+  <a class="logo" href="index.html">KAERU CODE NOTE</a>
+
+  <nav>
+    <a href="posts.html">投稿を見る</a>
+    <a href="upload.html">投稿する</a>
+  </nav>
+</header>
+
+<main class="page">
+
+  <div class="page-title">
+    <p class="eyebrow">POSTS</p>
+    <h1>投稿一覧</h1>
+    <p id="tagPageTitle" class="tag-page-title"></p>
+    <p>画像をクリックすると、詳しいコーデページが開きます。</p>
+  </div>
+
+  <section class="search-box">
+    <input
+      id="searchInput"
+      placeholder="コーデ名・タグ・商品コードで検索"
+    >
+  </section>
+
+  <div class="sort-box">
+    <button id="newSortBtn" class="sort-btn active">
+      新着順
+    </button>
+
+    <button id="popularSortBtn" class="sort-btn">
+      人気順
+    </button>
+  </div>
+
+  <div class="favorite-filter">
+    <button id="favoriteOnlyBtn" class="sub-btn">
+      ♡ お気に入りだけ表示
+    </button>
+  </div>
+
+  <section class="popular-tags-box">
+    <h2>人気タグ</h2>
+    <div id="popularTags"></div>
+  </section>
+
+  <section id="outfitList" class="post-grid"></section>
+
+</main>
+
 <nav class="bottom-nav">
+
   <a href="index.html">
     <span>⌂</span>
     <small>HOME</small>
@@ -27,44 +80,10 @@
     <span>♡</span>
     <small>LIKE</small>
   </a>
+
 </nav>
 
-<body>
-
-<header class="site-header">
-  <a class="logo" href="index.html">KAERU CODE NOTE</a>
-  <nav>
-    <a href="posts.html">投稿を見る</a>
-    <a href="upload.html">投稿する</a>
-  </nav>
-</header>
-
-<main class="page">
-  <div class="page-title">
-    <p class="eyebrow">POSTS</p>
-    <h1>投稿一覧</h1>
-<p id="tagPageTitle" class="tag-page-title"></p>
-    <p>画像をクリックすると、詳しいコーデページが開きます。</p>
-  </div>
-
-<section class="search-box">
-  <input id="searchInput" placeholder="コーデ名・タグ・商品コードで検索">
-</section>
-
-<div class="favorite-filter">
-  <button id="favoriteOnlyBtn" class="sub-btn">
-    ♡ お気に入りだけ表示
-  </button>
-</div>
-
-<section class="popular-tags-box">
-  <h2>人気タグ</h2>
-  <div id="popularTags"></div>
-</section>
-
-  <section id="outfitList" class="post-grid"></section>
-</main>
-
 <script type="module" src="script.js"></script>
+
 </body>
 </html>

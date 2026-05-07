@@ -898,3 +898,31 @@ color: #7edcff;
 .post-card:active .card-image-wrap img {
   transform: scale(0.97);
 }
+
+/* 並び替えボタン */
+
+.sort-box {
+  display: flex;
+  gap: 8px;
+  margin: 0 0 18px;
+}
+
+.sort-btn {
+  border: 1px solid #c8f3ff;
+  background: #eefbff;
+  color: #159ec1;
+
+  padding: 9px 14px;
+  border-radius: 999px;
+
+  font-size: 13px;
+  font-weight: 800;
+
+  cursor: pointer;
+}
+
+.sort-btn.active {
+  background: #111;
+  color: #fff;
+  border-color: #111;
+}

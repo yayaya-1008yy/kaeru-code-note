@@ -4,7 +4,10 @@ import {
   collection,
   getDocs,
   query,
-  orderBy
+  orderBy,
+  doc,
+  updateDoc,
+  increment
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 let outfits = [];
@@ -13,6 +16,8 @@ let favoriteOutfits =
   JSON.parse(localStorage.getItem("favoriteOutfits")) || [];
 
 let favoriteOnly = false;
+
+let sortMode = "new";
 
 const outfitList =
   document.getElementById("outfitList");
@@ -26,7 +31,14 @@ const popularTags =
 const favoriteOnlyBtn =
   document.getElementById("favoriteOnlyBtn");
 
+const newSortBtn =
+  document.getElementById("newSortBtn");
+
+const popularSortBtn =
+  document.getElementById("popularSortBtn");
+
 function getMainImage(outfit) {
+
   if (
     outfit.images &&
     outfit.images.length > 0
@@ -38,12 +50,14 @@ function getMainImage(outfit) {
 }
 
 async function loadOutfits() {
+
   if (outfitList) {
     outfitList.innerHTML =
       `<p class="empty">読み込み中...</p>`;
   }
 
   try {
+
     const q =
       query(
         collection(db, "outfits"),
@@ -71,32 +85,44 @@ async function loadOutfits() {
       document.getElementById("tagPageTitle");
 
     if (tag && tagPageTitle) {
+
       tagPageTitle.textContent =
         `#${tag} のコーデ一覧`;
+
     }
 
     if (tag && searchInput) {
+
       searchInput.value = tag;
       renderOutfits(tag);
+
     } else {
+
       renderOutfits();
+
     }
 
   } catch (error) {
+
     console.error(error);
 
     if (outfitList) {
+
       outfitList.innerHTML = `
         <p class="empty">
           投稿の読み込みに失敗しました。<br>
           少し時間をおいて再読み込みしてください。
         </p>
       `;
+
     }
+
   }
+
 }
 
 function renderPopularTags() {
+
   if (!popularTags) return;
 
   popularTags.innerHTML = "";
@@ -104,12 +130,16 @@ function renderPopularTags() {
   const tagCount = {};
 
   outfits.forEach(outfit => {
+
     if (!outfit.tags) return;
 
     outfit.tags.forEach(tag => {
+
       tagCount[tag] =
         (tagCount[tag] || 0) + 1;
+
     });
+
   });
 
   const sortedTags =
@@ -117,49 +147,102 @@ function renderPopularTags() {
       .sort((a, b) => b[1] - a[1]);
 
   if (sortedTags.length === 0) {
+
     popularTags.innerHTML =
       `<p class="empty">まだタグがありません。</p>`;
+
     return;
   }
 
   sortedTags.forEach(([tag, count]) => {
+
     const button =
       document.createElement("button");
 
     button.className = "popular-tag";
+
     button.textContent =
       `#${tag} (${count})`;
 
     button.addEventListener("click", () => {
+
       location.href =
         `posts.html?tag=${encodeURIComponent(tag)}`;
+
     });
 
     popularTags.appendChild(button);
+
   });
+
 }
 
-function toggleFavorite(id) {
-  if (favoriteOutfits.includes(id)) {
-    favoriteOutfits =
-      favoriteOutfits.filter(item => item !== id);
-  } else {
-    favoriteOutfits.push(id);
+async function toggleFavorite(id) {
+
+  const outfit =
+    outfits.find(item => item.id === id);
+
+  if (!outfit) return;
+
+  const alreadyFavorite =
+    favoriteOutfits.includes(id);
+
+  try {
+
+    const outfitRef =
+      doc(db, "outfits", outfit.firebaseId);
+
+    if (alreadyFavorite) {
+
+      favoriteOutfits =
+        favoriteOutfits.filter(item => item !== id);
+
+      await updateDoc(outfitRef, {
+        favoriteCount: increment(-1)
+      });
+
+      outfit.favoriteCount =
+        Math.max(
+          (outfit.favoriteCount || 1) - 1,
+          0
+        );
+
+    } else {
+
+      favoriteOutfits.push(id);
+
+      await updateDoc(outfitRef, {
+        favoriteCount: increment(1)
+      });
+
+      outfit.favoriteCount =
+        (outfit.favoriteCount || 0) + 1;
+
+    }
+
+    localStorage.setItem(
+      "favoriteOutfits",
+      JSON.stringify(favoriteOutfits)
+    );
+
+    renderOutfits(
+      searchInput
+        ? searchInput.value
+        : ""
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert("お気に入り更新に失敗しました");
+
   }
 
-  localStorage.setItem(
-    "favoriteOutfits",
-    JSON.stringify(favoriteOutfits)
-  );
-
-  renderOutfits(
-    searchInput
-      ? searchInput.value
-      : ""
-  );
 }
 
 function renderOutfits(keyword = "") {
+
   if (!outfitList) return;
 
   outfitList.innerHTML = "";
@@ -169,6 +252,7 @@ function renderOutfits(keyword = "") {
 
   const filteredOutfits =
     outfits.filter(outfit => {
+
       const titleText =
         (outfit.title || "").toLowerCase();
 
@@ -194,28 +278,45 @@ function renderOutfits(keyword = "") {
         allText.includes(searchWord);
 
       if (favoriteOnly) {
+
         return (
           matchesSearch &&
           favoriteOutfits.includes(outfit.id)
         );
+
       }
 
       return matchesSearch;
+
     });
 
+  if (sortMode === "popular") {
+
+    filteredOutfits.sort((a, b) => {
+      return (b.favoriteCount || 0)
+        - (a.favoriteCount || 0);
+    });
+
+  }
+
   if (outfits.length === 0) {
+
     outfitList.innerHTML =
       `<p class="empty">まだ投稿がありません。</p>`;
+
     return;
   }
 
   if (filteredOutfits.length === 0) {
+
     outfitList.innerHTML =
       `<p class="empty">検索に合う投稿がありません。</p>`;
+
     return;
   }
 
   filteredOutfits.forEach(outfit => {
+
     const card =
       document.createElement("article");
 
@@ -241,33 +342,40 @@ function renderOutfits(keyword = "") {
         ? outfit.items.length
         : 0;
 
-card.innerHTML = `
-  <div class="card-image-wrap">
+    card.innerHTML = `
 
-    <img
-      src="${getMainImage(outfit)}"
-      alt="${outfit.title || "コーデ画像"}"
-    >
+      <div class="card-image-wrap">
 
-    <div class="image-count-badge">
-      📷 ${imageCount}
-    </div>
+        <img
+          src="${getMainImage(outfit)}"
+          alt="${outfit.title || "コーデ画像"}"
+        >
 
-  </div>
+        <div class="image-count-badge">
+          📷 ${imageCount}
+        </div>
 
-  <div class="card-body">
+      </div>
+
+      <div class="card-body">
 
         <div class="card-title-row">
-          <h3>${outfit.title || "無題のコーデ"}</h3>
+
+          <h3>
+            ${outfit.title || "無題のコーデ"}
+          </h3>
 
           <button
             class="favorite-btn mini ${favoriteOutfits.includes(outfit.id) ? 'active' : ''}"
             onclick="event.stopPropagation(); toggleFavorite(${outfit.id})"
           >
+
             ${favoriteOutfits.includes(outfit.id)
               ? '♥'
               : '♡'}
+
           </button>
+
         </div>
 
         <p class="card-height">
@@ -278,42 +386,56 @@ card.innerHTML = `
           ${tagHtml}
         </div>
 
-<p class="card-info">
-  ♥ ${favoriteOutfits.includes(outfit.id) ? 1 : 0}
-  ／ 画像 ${imageCount}枚
-  ／ アイテム ${itemCount}点
-</p>
+        <p class="card-info">
+          ♥ ${outfit.favoriteCount || 0}
+          ／ 画像 ${imageCount}枚
+          ／ アイテム ${itemCount}点
+        </p>
+
         <button
           class="small-btn full-btn"
           onclick="event.stopPropagation(); location.href='outfit.html?id=${outfit.id}'"
         >
           詳しく見る
         </button>
+
       </div>
     `;
 
     card.addEventListener("click", () => {
+
       location.href =
         `outfit.html?id=${outfit.id}`;
+
     });
 
     outfitList.appendChild(card);
+
   });
+
 }
 
 function searchByTag(tag) {
+
   location.href =
     `posts.html?tag=${encodeURIComponent(tag)}`;
+
 }
 
 if (searchInput) {
+
   searchInput.addEventListener("input", () => {
+
     renderOutfits(searchInput.value);
+
   });
+
 }
 
 if (favoriteOnlyBtn) {
+
   favoriteOnlyBtn.addEventListener("click", () => {
+
     favoriteOnly = !favoriteOnly;
 
     favoriteOnlyBtn.textContent =
@@ -331,7 +453,45 @@ if (favoriteOnlyBtn) {
         ? searchInput.value
         : ""
     );
+
   });
+
+}
+
+if (newSortBtn && popularSortBtn) {
+
+  newSortBtn.addEventListener("click", () => {
+
+    sortMode = "new";
+
+    newSortBtn.classList.add("active");
+
+    popularSortBtn.classList.remove("active");
+
+    renderOutfits(
+      searchInput
+        ? searchInput.value
+        : ""
+    );
+
+  });
+
+  popularSortBtn.addEventListener("click", () => {
+
+    sortMode = "popular";
+
+    popularSortBtn.classList.add("active");
+
+    newSortBtn.classList.remove("active");
+
+    renderOutfits(
+      searchInput
+        ? searchInput.value
+        : ""
+    );
+
+  });
+
 }
 
 window.toggleFavorite =
