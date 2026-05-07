@@ -856,3 +856,24 @@ color: #7edcff;
   box-shadow:
     0 4px 14px rgba(0,0,0,0.1);
 }
+
+/* 投稿画像の下にふわっと影グラデーション */
+
+.card-image-wrap::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  height: 36%;
+
+  background:
+    linear-gradient(
+      to top,
+      rgba(0,0,0,0.22),
+      rgba(0,0,0,0)
+    );
+
+  pointer-events: none;
+}
