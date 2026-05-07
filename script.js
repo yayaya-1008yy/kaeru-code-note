@@ -24,6 +24,7 @@ const popularTags = document.getElementById("popularTags");
 const favoriteOnlyBtn = document.getElementById("favoriteOnlyBtn");
 const newSortBtn = document.getElementById("newSortBtn");
 const popularSortBtn = document.getElementById("popularSortBtn");
+const trendingSortBtn = document.getElementById("trendingSortBtn");
 
 function getMainImage(outfit) {
   if (outfit.images && outfit.images.length > 0) {
@@ -238,6 +239,20 @@ function renderOutfits(keyword = "") {
     });
   }
 
+  if (sortMode === "trending") {
+    filteredOutfits.sort((a, b) => {
+      const aScore =
+        (a.viewCount || 0)
+        + ((a.favoriteCount || 0) * 3);
+
+      const bScore =
+        (b.viewCount || 0)
+        + ((b.favoriteCount || 0) * 3);
+
+      return bScore - aScore;
+    });
+  }
+
   if (outfits.length === 0) {
     outfitList.innerHTML =
       `<p class="empty">まだ投稿がありません。</p>`;
@@ -338,6 +353,20 @@ function searchByTag(tag) {
     `posts.html?tag=${encodeURIComponent(tag)}`;
 }
 
+function resetSortButtons() {
+  if (newSortBtn) {
+    newSortBtn.classList.remove("active");
+  }
+
+  if (popularSortBtn) {
+    popularSortBtn.classList.remove("active");
+  }
+
+  if (trendingSortBtn) {
+    trendingSortBtn.classList.remove("active");
+  }
+}
+
 if (searchInput) {
   searchInput.addEventListener("input", () => {
     renderOutfits(searchInput.value);
@@ -366,12 +395,12 @@ if (favoriteOnlyBtn) {
   });
 }
 
-if (newSortBtn && popularSortBtn) {
+if (newSortBtn) {
   newSortBtn.addEventListener("click", () => {
     sortMode = "new";
 
+    resetSortButtons();
     newSortBtn.classList.add("active");
-    popularSortBtn.classList.remove("active");
 
     renderOutfits(
       searchInput
@@ -379,12 +408,29 @@ if (newSortBtn && popularSortBtn) {
         : ""
     );
   });
+}
 
+if (popularSortBtn) {
   popularSortBtn.addEventListener("click", () => {
     sortMode = "popular";
 
+    resetSortButtons();
     popularSortBtn.classList.add("active");
-    newSortBtn.classList.remove("active");
+
+    renderOutfits(
+      searchInput
+        ? searchInput.value
+        : ""
+    );
+  });
+}
+
+if (trendingSortBtn) {
+  trendingSortBtn.addEventListener("click", () => {
+    sortMode = "trending";
+
+    resetSortButtons();
+    trendingSortBtn.classList.add("active");
 
     renderOutfits(
       searchInput
