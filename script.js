@@ -61,6 +61,8 @@ if (tag && searchInput) {
   renderOutfits();
 }
 
+}
+
 function renderPopularTags() {
   if (!popularTags) return;
 
