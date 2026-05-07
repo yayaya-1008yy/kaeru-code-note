@@ -285,19 +285,28 @@ async function addOutfit() {
     items: [...items],
     date: new Date().toLocaleDateString("ja-JP"),
     createdAt: Date.now(),
+
+    ownerId: currentUser.uid,
     userId: currentUser.uid,
     userEmail: currentUser.email,
+
     favoriteCount: 0,
     viewCount: 0
   };
 
-  await addDoc(
-    collection(db, "outfits"),
-    outfit
-  );
+  try {
+    await addDoc(
+      collection(db, "outfits"),
+      outfit
+    );
 
-  alert("投稿できました！");
-  location.href = "posts.html";
+    alert("投稿できました！");
+    location.href = "posts.html";
+
+  } catch (error) {
+    console.error(error);
+    alert("投稿に失敗しました。ログイン状態かFirestoreルールを確認してください。");
+  }
 }
 
 onAuthStateChanged(auth, user => {
