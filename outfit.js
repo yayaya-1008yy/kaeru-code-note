@@ -57,25 +57,32 @@ function copyCode(code) {
 }
 
 function swipeImage(direction) {
-  const outfit = outfits.find(item => item.id === outfitId);
+
+  const outfit =
+    outfits.find(item => item.id === outfitId);
 
   if (!outfit) return;
 
   const images = getImages(outfit);
+
   if (images.length <= 1) return;
 
   if (direction === "next") {
+
     currentImageIndex =
       currentImageIndex < images.length - 1
         ? currentImageIndex + 1
         : 0;
+
   }
 
   if (direction === "prev") {
+
     currentImageIndex =
       currentImageIndex > 0
         ? currentImageIndex - 1
         : images.length - 1;
+
   }
 
   renderDetail();
