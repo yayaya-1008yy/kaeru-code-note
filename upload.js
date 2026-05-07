@@ -1,5 +1,3 @@
-alert("upload.js 読めてる");
-
 import { db } from "./firebase.js";
 
 import {
