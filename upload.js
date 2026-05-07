@@ -103,7 +103,7 @@ function compressImage(file) {
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
 
-        const maxWidth = 1200;
+        const maxWidth = 800;
         const scale = img.width > maxWidth ? maxWidth / img.width : 1;
 
         canvas.width = img.width * scale;
@@ -111,7 +111,7 @@ function compressImage(file) {
 
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-        resolve(canvas.toDataURL("image/jpeg", 0.9));
+        resolve(canvas.toDataURL("image/jpeg", 0.7));
       };
 
       img.src = e.target.result;
