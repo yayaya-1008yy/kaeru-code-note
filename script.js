@@ -241,13 +241,22 @@ function renderOutfits(keyword = "") {
         ? outfit.items.length
         : 0;
 
-    card.innerHTML = `
-      <img
-        src="${getMainImage(outfit)}"
-        alt="${outfit.title || "コーデ画像"}"
-      >
+card.innerHTML = `
+  <div class="card-image-wrap">
 
-      <div class="card-body">
+    <img
+      src="${getMainImage(outfit)}"
+      alt="${outfit.title || "コーデ画像"}"
+    >
+
+    <div class="image-count-badge">
+      📷 ${imageCount}
+    </div>
+
+  </div>
+
+  <div class="card-body">
+
         <div class="card-title-row">
           <h3>${outfit.title || "無題のコーデ"}</h3>
 
