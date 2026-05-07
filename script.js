@@ -27,7 +27,6 @@ const favoriteOnlyBtn =
   document.getElementById("favoriteOnlyBtn");
 
 function getMainImage(outfit) {
-
   if (
     outfit.images &&
     outfit.images.length > 0
@@ -39,14 +38,12 @@ function getMainImage(outfit) {
 }
 
 async function loadOutfits() {
-
   if (outfitList) {
     outfitList.innerHTML =
       `<p class="empty">読み込み中...</p>`;
   }
 
   try {
-
     const q =
       query(
         collection(db, "outfits"),
@@ -86,7 +83,6 @@ async function loadOutfits() {
     }
 
   } catch (error) {
-
     console.error(error);
 
     if (outfitList) {
@@ -97,27 +93,10 @@ async function loadOutfits() {
         </p>
       `;
     }
-
   }
-
-}
-
-  if (tag && searchInput) {
-
-    searchInput.value = tag;
-
-    renderOutfits(tag);
-
-  } else {
-
-    renderOutfits();
-
-  }
-
 }
 
 function renderPopularTags() {
-
   if (!popularTags) return;
 
   popularTags.innerHTML = "";
@@ -125,16 +104,12 @@ function renderPopularTags() {
   const tagCount = {};
 
   outfits.forEach(outfit => {
-
     if (!outfit.tags) return;
 
     outfit.tags.forEach(tag => {
-
       tagCount[tag] =
         (tagCount[tag] || 0) + 1;
-
     });
-
   });
 
   const sortedTags =
@@ -142,47 +117,34 @@ function renderPopularTags() {
       .sort((a, b) => b[1] - a[1]);
 
   if (sortedTags.length === 0) {
-
     popularTags.innerHTML =
       `<p class="empty">まだタグがありません。</p>`;
-
     return;
   }
 
   sortedTags.forEach(([tag, count]) => {
-
     const button =
       document.createElement("button");
 
     button.className = "popular-tag";
-
     button.textContent =
       `#${tag} (${count})`;
 
     button.addEventListener("click", () => {
-
       location.href =
         `posts.html?tag=${encodeURIComponent(tag)}`;
-
     });
 
     popularTags.appendChild(button);
-
   });
-
 }
 
 function toggleFavorite(id) {
-
   if (favoriteOutfits.includes(id)) {
-
     favoriteOutfits =
       favoriteOutfits.filter(item => item !== id);
-
   } else {
-
     favoriteOutfits.push(id);
-
   }
 
   localStorage.setItem(
@@ -195,11 +157,9 @@ function toggleFavorite(id) {
       ? searchInput.value
       : ""
   );
-
 }
 
 function renderOutfits(keyword = "") {
-
   if (!outfitList) return;
 
   outfitList.innerHTML = "";
@@ -209,7 +169,6 @@ function renderOutfits(keyword = "") {
 
   const filteredOutfits =
     outfits.filter(outfit => {
-
       const titleText =
         (outfit.title || "").toLowerCase();
 
@@ -235,36 +194,28 @@ function renderOutfits(keyword = "") {
         allText.includes(searchWord);
 
       if (favoriteOnly) {
-
         return (
           matchesSearch &&
           favoriteOutfits.includes(outfit.id)
         );
-
       }
 
       return matchesSearch;
-
     });
 
   if (outfits.length === 0) {
-
     outfitList.innerHTML =
       `<p class="empty">まだ投稿がありません。</p>`;
-
     return;
   }
 
   if (filteredOutfits.length === 0) {
-
     outfitList.innerHTML =
       `<p class="empty">検索に合う投稿がありません。</p>`;
-
     return;
   }
 
   filteredOutfits.forEach(outfit => {
-
     const card =
       document.createElement("article");
 
@@ -293,14 +244,12 @@ function renderOutfits(keyword = "") {
     card.innerHTML = `
       <img
         src="${getMainImage(outfit)}"
-        alt="${outfit.title}"
+        alt="${outfit.title || "コーデ画像"}"
       >
 
       <div class="card-body">
-
         <div class="card-title-row">
-
-          <h3>${outfit.title}</h3>
+          <h3>${outfit.title || "無題のコーデ"}</h3>
 
           <button
             class="favorite-btn mini ${favoriteOutfits.includes(outfit.id) ? 'active' : ''}"
@@ -310,11 +259,10 @@ function renderOutfits(keyword = "") {
               ? '♥'
               : '♡'}
           </button>
-
         </div>
 
         <p class="card-height">
-          ${outfit.height}
+          ${outfit.height || ""}
         </p>
 
         <div class="card-tags">
@@ -331,44 +279,31 @@ function renderOutfits(keyword = "") {
         >
           詳しく見る
         </button>
-
       </div>
     `;
 
     card.addEventListener("click", () => {
-
       location.href =
         `outfit.html?id=${outfit.id}`;
-
     });
 
     outfitList.appendChild(card);
-
   });
-
 }
 
 function searchByTag(tag) {
-
   location.href =
     `posts.html?tag=${encodeURIComponent(tag)}`;
-
 }
 
 if (searchInput) {
-
   searchInput.addEventListener("input", () => {
-
     renderOutfits(searchInput.value);
-
   });
-
 }
 
 if (favoriteOnlyBtn) {
-
   favoriteOnlyBtn.addEventListener("click", () => {
-
     favoriteOnly = !favoriteOnly;
 
     favoriteOnlyBtn.textContent =
@@ -386,9 +321,7 @@ if (favoriteOnlyBtn) {
         ? searchInput.value
         : ""
     );
-
   });
-
 }
 
 window.toggleFavorite =
