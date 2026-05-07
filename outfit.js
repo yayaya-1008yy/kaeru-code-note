@@ -218,13 +218,13 @@ function renderDetail() {
     </div>
   `;
 
-  const swipeImage = document.getElementById("swipeImage");
+const swipeTarget = document.getElementById("swipeImage");
 
-  swipeImage.addEventListener("touchstart", e => {
+  swipeTarget.addEventListener("touchstart", e => {
     touchStartX = e.changedTouches[0].screenX;
   });
 
-  swipeImage.addEventListener("touchend", e => {
+  swipeTarget.addEventListener("touchend", e => {
     touchEndX = e.changedTouches[0].screenX;
 
     if (touchStartX - touchEndX > 50) {
