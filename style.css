@@ -797,3 +797,30 @@ color: #7edcff;
     translateY(-50%)
     scale(0.88);
 }
+
+/* 画像ふわっと表示 */
+
+.post-card img,
+.detail-image,
+.thumbnail-image {
+  opacity: 0;
+
+  animation:
+    imageFade 0.5s ease forwards;
+}
+
+@keyframes imageFade {
+
+  from {
+    opacity: 0;
+    transform: scale(1.03);
+    filter: blur(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+
+}
