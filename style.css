@@ -892,3 +892,9 @@ color: #7edcff;
 .post-card:hover .card-image-wrap img {
   transform: scale(1.05);
 }
+
+/* スマホで画像もぷにっと */
+
+.post-card:active .card-image-wrap img {
+  transform: scale(0.97);
+}
