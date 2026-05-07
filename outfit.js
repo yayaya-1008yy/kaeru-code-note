@@ -58,7 +58,6 @@ function copyCode(code) {
 
 function swipeImage(direction) {
   const outfit = outfits.find(item => item.id === outfitId);
-const currentIndex =
 
   if (!outfit) return;
 
