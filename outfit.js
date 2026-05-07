@@ -10,18 +10,27 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 let outfits = [];
+
 let favoriteOutfits =
   JSON.parse(localStorage.getItem("favoriteOutfits")) || [];
 
-const params = new URLSearchParams(window.location.search);
-const outfitId = Number(params.get("id"));
+const params =
+  new URLSearchParams(window.location.search);
 
-const detailArea = document.getElementById("detailArea");
+const outfitId =
+  Number(params.get("id"));
+
+const detailArea =
+  document.getElementById("detailArea");
 
 let currentImageIndex = 0;
 
 function getImages(outfit) {
-  if (outfit.images && outfit.images.length > 0) {
+
+  if (
+    outfit.images &&
+    outfit.images.length > 0
+  ) {
     return outfit.images;
   }
 
@@ -29,6 +38,7 @@ function getImages(outfit) {
 }
 
 function saveFavorites() {
+
   localStorage.setItem(
     "favoriteOutfits",
     JSON.stringify(favoriteOutfits)
@@ -40,54 +50,75 @@ function isFavorite(id) {
 }
 
 function toggleFavorite(id) {
+
   if (isFavorite(id)) {
+
     favoriteOutfits =
-      favoriteOutfits.filter(item => item !== id);
+      favoriteOutfits.filter(
+        item => item !== id
+      );
+
   } else {
+
     favoriteOutfits.push(id);
+
   }
 
   saveFavorites();
+
   renderDetail();
 }
 
 function changeMainImage(index) {
+
   currentImageIndex = index;
+
   renderDetail();
 }
 
 function copyCode(code) {
+
   navigator.clipboard.writeText(code);
 
   alert("商品コードをコピーしました！");
 }
 
 async function deleteOutfit(firebaseId) {
-  if (!confirm("この投稿を削除しますか？")) {
+
+  if (
+    !confirm("この投稿を削除しますか？")
+  ) {
     return;
   }
 
   try {
+
     await deleteDoc(
       doc(db, "outfits", firebaseId)
     );
 
     alert("投稿を削除しました");
+
     location.href = "posts.html";
+
   } catch (error) {
+
     console.error(error);
+
     alert("削除に失敗しました");
   }
 }
 
 async function loadOutfit() {
+
   const q =
     query(
       collection(db, "outfits"),
       orderBy("createdAt", "desc")
     );
 
-  const snapshot = await getDocs(q);
+  const snapshot =
+    await getDocs(q);
 
   outfits =
     snapshot.docs.map(docItem => ({
@@ -99,16 +130,23 @@ async function loadOutfit() {
 }
 
 function renderDetail() {
+
   const outfit =
-    outfits.find(item => item.id === outfitId);
+    outfits.find(
+      item => item.id === outfitId
+    );
 
   if (!outfit) {
+
     detailArea.innerHTML = `
       <p class="empty">
         この投稿は見つかりませんでした。
       </p>
 
-      <a class="back-link" href="posts.html">
+      <a
+        class="back-link"
+        href="posts.html"
+      >
         投稿一覧に戻る
       </a>
     `;
@@ -116,14 +154,18 @@ function renderDetail() {
     return;
   }
 
-  const images = getImages(outfit);
+  const images =
+    getImages(outfit);
 
-  if (currentImageIndex >= images.length) {
+  if (
+    currentImageIndex >= images.length
+  ) {
     currentImageIndex = 0;
   }
 
   const thumbnailHtml =
     images.map((image, index) => {
+
       return `
         <img
           class="thumbnail-image ${index === currentImageIndex ? 'active' : ''}"
@@ -132,10 +174,12 @@ function renderDetail() {
           onclick="changeMainImage(${index})"
         >
       `;
+
     }).join("");
 
   const tagHtml =
-    outfit.tags && outfit.tags.length
+    outfit.tags &&
+    outfit.tags.length
       ? outfit.tags.map(tag =>
           `<span class="tag">#${tag}</span>`
         ).join("")
@@ -143,14 +187,17 @@ function renderDetail() {
 
   const itemHtml =
     outfit.items.map((item, index) => {
+
       return `
         <div class="detail-item">
 
           <div class="detail-item-name">
-            アイテム${index + 1}：${item.name}
+            アイテム${index + 1}：
+            ${item.name}
           </div>
 
           <div class="detail-item-code">
+
             商品コード：
             <span class="item-code-text">
               ${item.code}
@@ -163,6 +210,7 @@ function renderDetail() {
             >
               コピー
             </button>
+
           </div>
 
           <a
@@ -175,14 +223,16 @@ function renderDetail() {
 
         </div>
       `;
+
     }).join("");
 
   detailArea.innerHTML = `
-<img
-  class="detail-image"
-  src="${images[currentImageIndex]}"
-  alt="${outfit.title}"
->
+
+    <img
+      class="detail-image"
+      src="${images[currentImageIndex]}"
+      alt="${outfit.title}"
+    >
 
     <div class="thumbnail-list">
       ${thumbnailHtml}
@@ -224,7 +274,8 @@ function renderDetail() {
     </p>
 
     <p class="post-date">
-      投稿日：${outfit.date || "投稿日なし"}
+      投稿日：
+      ${outfit.date || "投稿日なし"}
     </p>
 
     <div class="detail-tags">
@@ -241,9 +292,16 @@ function renderDetail() {
   `;
 }
 
-window.toggleFavorite = toggleFavorite;
-window.changeMainImage = changeMainImage;
-window.deleteOutfit = deleteOutfit;
-window.copyCode = copyCode;
+window.toggleFavorite =
+  toggleFavorite;
+
+window.changeMainImage =
+  changeMainImage;
+
+window.deleteOutfit =
+  deleteOutfit;
+
+window.copyCode =
+  copyCode;
 
 loadOutfit();
