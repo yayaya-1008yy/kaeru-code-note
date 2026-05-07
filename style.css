@@ -220,14 +220,15 @@ input:focus {
 
 .tag,
 .popular-tag {
-  background: #dff8ff;
-  color: #111;
-  border: 1px solid #b8f1ff;
-  padding: 6px 10px;
+  background: #eefbff;
+  color: #159ec1;
+  border: 1px solid #c8f3ff;
+  padding: 7px 11px;
   border-radius: 999px;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 800;
   cursor: pointer;
+  box-shadow: 0 3px 10px rgba(72,191,227,0.12);
 }
 
 .popular-tag {
@@ -236,8 +237,8 @@ input:focus {
 
 .tag:hover,
 .popular-tag:hover {
-  background: #111;
-  color: #fff;
+  background: #dff8ff;
+  color: #111;
 }
 
 .item-chip {
