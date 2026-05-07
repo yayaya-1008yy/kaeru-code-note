@@ -583,3 +583,40 @@ input:focus {
   }
 
 }
+
+.card-title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.card-title-row h3 {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.favorite-btn.mini {
+  min-width: 36px;
+  height: 36px;
+  padding: 0;
+  border-radius: 999px;
+  font-size: 18px;
+}
+
+.card-height {
+  margin: 6px 0;
+  font-size: 13px;
+  color: #777;
+}
+
+.card-info {
+  margin: 8px 0 12px;
+  font-size: 12px;
+  color: #999;
+}
+
+.card-body {
+  padding: 12px;
+}

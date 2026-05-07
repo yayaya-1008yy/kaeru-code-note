@@ -326,41 +326,43 @@ function renderOutfits(keyword = "") {
         ).join("")
       : "";
 
-    card.innerHTML = `
-      <img src="${getMainImage(outfit)}" alt="${outfit.title}">
+  <img src="${getMainImage(outfit)}" alt="${outfit.title}">
 
-      <div class="card-body">
-        <h3>${outfit.title}</h3>
-        <p>${outfit.height}</p>
+  <div class="card-body">
 
-        <p class="post-date">
-          ${outfit.date || "投稿日なし"}
-        </p>
+    <div class="card-title-row">
 
-        <p>画像：${outfit.images ? outfit.images.length : 1}枚</p>
-        <p>アイテム数：${outfit.items.length}</p>
+      <h3>${outfit.title}</h3>
 
-        <div class="card-tags">
-          ${tagHtml}
-        </div>
+      <button
+        class="favorite-btn mini ${favoriteOutfits.includes(outfit.id) ? 'active' : ''}"
+        onclick="event.stopPropagation(); toggleFavorite(${outfit.id})"
+      >
+        ${favoriteOutfits.includes(outfit.id) ? '♥' : '♡'}
+      </button>
 
-        <div class="card-actions">
-          <button
-            class="favorite-btn ${favoriteOutfits.includes(outfit.id) ? 'active' : ''}"
-            onclick="event.stopPropagation(); toggleFavorite(${outfit.id})"
-          >
-            ${favoriteOutfits.includes(outfit.id) ? '♥ 保存済み' : '♡ お気に入り'}
-          </button>
+    </div>
 
-          <button
-            class="small-btn"
-            onclick="event.stopPropagation(); location.href='outfit.html?id=${outfit.id}'"
-          >
-            詳しく見る
-          </button>
-        </div>
-      </div>
-    `;
+    <p class="card-height">
+      ${outfit.height}
+    </p>
+
+    <div class="card-tags">
+      ${tagHtml}
+    </div>
+
+    <p class="card-info">
+      画像 ${outfit.images ? outfit.images.length : 1}枚 ／ アイテム ${outfit.items.length}点
+    </p>
+
+    <button
+      class="small-btn full-btn"
+      onclick="event.stopPropagation(); location.href='outfit.html?id=${outfit.id}'"
+    >
+      詳しく見る
+    </button>
+
+  </div>
 
     card.addEventListener("click", () => {
       location.href = `outfit.html?id=${outfit.id}`;
