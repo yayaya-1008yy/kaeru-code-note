@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>投稿する｜買えるコーデ帳</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <a class="logo" href="index.html">
+    KAERU CODE NOTE
+  </a>
+
+  <nav>
+    <a href="posts.html">投稿を見る</a>
+    <a href="upload.html">投稿する</a>
+  </nav>
+</header>
+
+<main class="page">
+
+  <div class="page-title">
+    <p class="eyebrow">UPLOAD</p>
+
+    <h1>コーデを投稿する</h1>
+
+    <p>
+      画像・身長・タグ・SHEIN商品コードを登録できます。
+    </p>
+  </div>
+
+  <section class="form-box">
+
+    <div class="form-section">
+
+      <h2>基本情報</h2>
+
+      <input
+        id="title"
+        placeholder="コーデ名"
+      >
+
+      <input
+        type="file"
+        id="image"
+        accept="image/*"
+        multiple
+      >
+
+      <p class="help">
+        画像は複数枚選べます。
+        1枚目が一覧に表示されます。
+      </p>
+
+      <input
+        id="height"
+        placeholder="身長 例：152cm"
+      >
+
+    </div>
+
+    <div class="form-section">
+
+      <h2>タグ</h2>
+
+      <p class="help">
+        タグを入力して「＋タグ追加」を押してください。
+        タグを押すと削除できます。
+      </p>
+
+      <input
+        id="tagInput"
+        placeholder="例：韓国、低身長、春コーデ"
+      >
+
+<button type="button" class="dark-btn" id="tagAddBtn">
+  ＋ タグ追加
+</button>
+
+
+      <div id="tagList"></div>
+
+    </div>
+
+    <div class="form-section">
+
+      <h2>着用アイテム</h2>
+
+      <p class="help">
+        商品名とSHEIN商品コードを入れて追加してください。
+      </p>
+
+      <input
+        id="itemName"
+        placeholder="商品名 例：トップス"
+      >
+
+      <input
+        id="itemCode"
+        placeholder="SHEIN商品コード 例：414417747"
+      >
+
+<button type="button" class="dark-btn" id="itemAddBtn">
+  ＋ アイテム追加
+</button>
+
+      <div id="itemList"></div>
+
+    </div>
+
+<button type="button" class="main-btn full-btn" id="outfitAddBtn">
+  コーデを登録する
+</button>
+
+  </section>
+
+</main>
+
+<nav class="bottom-nav">
+
+  <a href="index.html">
+    <span>⌂</span>
+    <small>HOME</small>
+  </a>
+
+  <a href="posts.html">
+    <span>⌕</span>
+    <small>POSTS</small>
+  </a>
+
+  <a href="upload.html" class="center-post">
+    <span>＋</span>
+    <small>POST</small>
+  </a>
+
+  <a href="favorites.html">
+    <span>♡</span>
+    <small>LIKE</small>
+  </a>
+
+</nav>
+
+<script type="module" src="./upload.js?v=1"></script>
+
+</body>
+</html>

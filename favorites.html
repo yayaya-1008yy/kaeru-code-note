@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>お気に入り｜買えるコーデ帳</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <a class="logo" href="index.html">KAERU CODE NOTE</a>
+
+  <nav>
+    <a href="posts.html">投稿一覧</a>
+    <a href="upload.html">投稿する</a>
+  </nav>
+</header>
+
+<main class="page">
+
+  <div class="page-title">
+    <p class="eyebrow">FAVORITES</p>
+    <h1>お気に入り</h1>
+    <p>保存したコーデ一覧。</p>
+  </div>
+
+  <section class="search-box">
+    <input id="favoriteSearchInput" placeholder="お気に入りを検索">
+  </section>
+
+  <section id="favoriteList" class="post-grid"></section>
+
+</main>
+
+<nav class="bottom-nav">
+  <a href="index.html">
+    <span>⌂</span>
+    <small>HOME</small>
+  </a>
+
+  <a href="posts.html">
+    <span>⌕</span>
+    <small>POSTS</small>
+  </a>
+
+  <a href="upload.html" class="center-post">
+    <span>＋</span>
+    <small>POST</small>
+  </a>
+
+  <a href="favorites.html">
+    <span>♡</span>
+    <small>LIKE</small>
+  </a>
+</nav>
+
+<script>
+const outfits =
+  JSON.parse(localStorage.getItem("outfits")) || [];
+
+const favoriteOutfits =
+  JSON.parse(localStorage.getItem("favoriteOutfits")) || [];
+
+const favoriteList =
+  document.getElementById("favoriteList");
+
+const favoriteSearchInput =
+  document.getElementById("favoriteSearchInput");
+
+favoriteSearchInput.addEventListener("input", () => {
+  renderFavorites(
+    favoriteSearchInput.value
+  );
+});
+
+function toggleFavorite(id) {
+  let updatedFavorites;
+
+  if (favoriteOutfits.includes(id)) {
+    updatedFavorites =
+      favoriteOutfits.filter(item => item !== id);
+  } else {
+    updatedFavorites =
+      [...favoriteOutfits, id];
+  }
+
+  localStorage.setItem(
+    "favoriteOutfits",
+    JSON.stringify(updatedFavorites)
+  );
+
+  location.reload();
+}
+
+function renderFavorites(keyword = "") {
+
+  favoriteList.innerHTML = "";
+
+  const searchWord =
+    keyword.toLowerCase().trim();
+
+  const filtered = outfits.filter(outfit => {
+
+    const isFavorite =
+      favoriteOutfits.includes(outfit.id);
+
+    const allText = `
+      ${outfit.title}
+      ${outfit.height}
+      ${outfit.tags.join(" ")}
+      ${outfit.items.map(
+        item => item.name + " " + item.code
+      ).join(" ")}
+    `.toLowerCase();
+
+    return isFavorite &&
+      allText.includes(searchWord);
+  });
+
+  if (filtered.length === 0) {
+    favoriteList.innerHTML = `
+      <p class="empty">
+        お気に入りがありません。
+      </p>
+    `;
+    return;
+  }
+
+  filtered.forEach(outfit => {
+
+    const tagHtml =
+      outfit.tags.map(tag =>
+        `<span class="tag">#${tag}</span>`
+      ).join("");
+
+    const card =
+      document.createElement("article");
+
+    card.className = "post-card";
+
+    card.innerHTML = `
+      <img src="${outfit.image}" alt="${outfit.title}">
+
+      <div class="card-body">
+
+        <h3>${outfit.title}</h3>
+
+        <p>${outfit.height}</p>
+
+        <div class="card-tags">
+          ${tagHtml}
+        </div>
+
+        <div class="card-actions">
+
+          <button
+            class="favorite-btn active"
+            onclick="event.stopPropagation(); toggleFavorite(${outfit.id})"
+          >
+            ♥ 保存済み
+          </button>
+
+          <button
+            class="small-btn"
+            onclick="event.stopPropagation(); location.href='outfit.html?id=${outfit.id}'"
+          >
+            詳しく見る
+          </button>
+
+        </div>
+
+      </div>
+    `;
+
+    card.addEventListener("click", () => {
+      location.href =
+        `outfit.html?id=${outfit.id}`;
+    });
+
+    favoriteList.appendChild(card);
+
+  });
+}
+
+renderFavorites();
+</script>
+
+</body>
+</html>

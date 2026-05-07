@@ -3,32 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>買えるコーデ帳</title>
+  <title>投稿編集｜買えるコーデ帳</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header class="site-header">
   <a class="logo" href="index.html">KAERU CODE NOTE</a>
+
   <nav>
-    <a href="posts.html">投稿を見る</a>
+    <a href="posts.html">投稿一覧</a>
     <a href="upload.html">投稿する</a>
   </nav>
 </header>
 
-<main class="top-page">
-  <section class="hero">
-    <p class="eyebrow">SHEIN OUTFIT ARCHIVE</p>
-    <h1>買えるコーデを、<br>見やすくまとめる。</h1>
-    <p class="hero-text">
-      SHEINの商品コード付きで、コーデを保存・共有できるコーデ帳。
-    </p>
+<main class="page">
 
-    <div class="hero-buttons">
-      <a class="main-btn" href="posts.html">投稿を見る</a>
-      <a class="sub-btn" href="upload.html">投稿する</a>
-    </div>
-  </section>
+  <div class="detail-top">
+    <a class="back-link" href="posts.html">← 投稿一覧に戻る</a>
+  </div>
+
+  <div class="page-title">
+    <p class="eyebrow">EDIT</p>
+    <h1>投稿を編集する</h1>
+    <p>コーデ名・身長・タグ・アイテムを修正できます。</p>
+  </div>
+
+  <section id="editArea" class="form-box"></section>
+
 </main>
 
 <nav class="bottom-nav">
@@ -53,5 +55,6 @@
   </a>
 </nav>
 
+<script type="module" src="edit.js"></script>
 </body>
 </html>
