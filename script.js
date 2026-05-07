@@ -8,6 +8,7 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 let outfits = [];
+
 let favoriteOutfits =
   JSON.parse(localStorage.getItem("favoriteOutfits")) || [];
 
@@ -26,7 +27,11 @@ const favoriteOnlyBtn =
   document.getElementById("favoriteOnlyBtn");
 
 function getMainImage(outfit) {
-  if (outfit.images && outfit.images.length > 0) {
+
+  if (
+    outfit.images &&
+    outfit.images.length > 0
+  ) {
     return outfit.images[0];
   }
 
@@ -34,6 +39,14 @@ function getMainImage(outfit) {
 }
 
 async function loadOutfits() {
+
+  if (outfitList) {
+
+    outfitList.innerHTML =
+      `<p class="empty">読み込み中...</p>`;
+
+  }
+
   const q =
     query(
       collection(db, "outfits"),
@@ -49,27 +62,40 @@ async function loadOutfits() {
       ...docItem.data()
     }));
 
-renderPopularTags();
+  renderPopularTags();
 
-const params = new URLSearchParams(window.location.search);
-const tag = params.get("tag");
+  const params =
+    new URLSearchParams(window.location.search);
 
-const tagPageTitle = document.getElementById("tagPageTitle");
+  const tag =
+    params.get("tag");
 
-if (tag && tagPageTitle) {
-  tagPageTitle.textContent = `#${tag} のコーデ一覧`;
-}
+  const tagPageTitle =
+    document.getElementById("tagPageTitle");
 
-if (tag && searchInput) {
-  searchInput.value = tag;
-  renderOutfits(tag);
-} else {
-  renderOutfits();
-}
+  if (tag && tagPageTitle) {
+
+    tagPageTitle.textContent =
+      `#${tag} のコーデ一覧`;
+
+  }
+
+  if (tag && searchInput) {
+
+    searchInput.value = tag;
+
+    renderOutfits(tag);
+
+  } else {
+
+    renderOutfits();
+
+  }
 
 }
 
 function renderPopularTags() {
+
   if (!popularTags) return;
 
   popularTags.innerHTML = "";
@@ -77,12 +103,16 @@ function renderPopularTags() {
   const tagCount = {};
 
   outfits.forEach(outfit => {
+
     if (!outfit.tags) return;
 
     outfit.tags.forEach(tag => {
+
       tagCount[tag] =
         (tagCount[tag] || 0) + 1;
+
     });
+
   });
 
   const sortedTags =
@@ -90,36 +120,47 @@ function renderPopularTags() {
       .sort((a, b) => b[1] - a[1]);
 
   if (sortedTags.length === 0) {
+
     popularTags.innerHTML =
       `<p class="empty">まだタグがありません。</p>`;
+
     return;
   }
 
   sortedTags.forEach(([tag, count]) => {
+
     const button =
       document.createElement("button");
 
     button.className = "popular-tag";
-    button.textContent = `#${tag} (${count})`;
+
+    button.textContent =
+      `#${tag} (${count})`;
 
     button.addEventListener("click", () => {
-      if (searchInput) {
-        searchInput.value = tag;
-      }
 
-      renderOutfits(tag);
+      location.href =
+        `posts.html?tag=${encodeURIComponent(tag)}`;
+
     });
 
     popularTags.appendChild(button);
+
   });
+
 }
 
 function toggleFavorite(id) {
+
   if (favoriteOutfits.includes(id)) {
+
     favoriteOutfits =
       favoriteOutfits.filter(item => item !== id);
+
   } else {
+
     favoriteOutfits.push(id);
+
   }
 
   localStorage.setItem(
@@ -127,10 +168,16 @@ function toggleFavorite(id) {
     JSON.stringify(favoriteOutfits)
   );
 
-  renderOutfits(searchInput ? searchInput.value : "");
+  renderOutfits(
+    searchInput
+      ? searchInput.value
+      : ""
+  );
+
 }
 
 function renderOutfits(keyword = "") {
+
   if (!outfitList) return;
 
   outfitList.innerHTML = "";
@@ -140,6 +187,7 @@ function renderOutfits(keyword = "") {
 
   const filteredOutfits =
     outfits.filter(outfit => {
+
       const titleText =
         (outfit.title || "").toLowerCase();
 
@@ -165,52 +213,66 @@ function renderOutfits(keyword = "") {
         allText.includes(searchWord);
 
       if (favoriteOnly) {
+
         return (
           matchesSearch &&
           favoriteOutfits.includes(outfit.id)
         );
+
       }
 
       return matchesSearch;
+
     });
 
   if (outfits.length === 0) {
+
     outfitList.innerHTML =
       `<p class="empty">まだ投稿がありません。</p>`;
+
     return;
   }
 
   if (filteredOutfits.length === 0) {
+
     outfitList.innerHTML =
       `<p class="empty">検索に合う投稿がありません。</p>`;
+
     return;
   }
 
   filteredOutfits.forEach(outfit => {
+
     const card =
       document.createElement("article");
 
     card.className = "post-card";
 
     const tagHtml =
-      outfit.tags && outfit.tags.length
+      outfit.tags &&
+      outfit.tags.length
         ? outfit.tags.map(tag =>
             `<span class="tag" onclick="event.stopPropagation(); searchByTag('${tag}')">#${tag}</span>`
           ).join("")
         : "";
 
     const imageCount =
-      outfit.images && outfit.images.length
+      outfit.images &&
+      outfit.images.length
         ? outfit.images.length
         : 1;
 
     const itemCount =
-      outfit.items && outfit.items.length
+      outfit.items &&
+      outfit.items.length
         ? outfit.items.length
         : 0;
 
     card.innerHTML = `
-      <img src="${getMainImage(outfit)}" alt="${outfit.title}">
+      <img
+        src="${getMainImage(outfit)}"
+        alt="${outfit.title}"
+      >
 
       <div class="card-body">
 
@@ -222,7 +284,9 @@ function renderOutfits(keyword = "") {
             class="favorite-btn mini ${favoriteOutfits.includes(outfit.id) ? 'active' : ''}"
             onclick="event.stopPropagation(); toggleFavorite(${outfit.id})"
           >
-            ${favoriteOutfits.includes(outfit.id) ? '♥' : '♡'}
+            ${favoriteOutfits.includes(outfit.id)
+              ? '♥'
+              : '♡'}
           </button>
 
         </div>
@@ -250,26 +314,39 @@ function renderOutfits(keyword = "") {
     `;
 
     card.addEventListener("click", () => {
+
       location.href =
         `outfit.html?id=${outfit.id}`;
+
     });
 
     outfitList.appendChild(card);
+
   });
+
 }
 
 function searchByTag(tag) {
-  location.href = `posts.html?tag=${encodeURIComponent(tag)}`;
+
+  location.href =
+    `posts.html?tag=${encodeURIComponent(tag)}`;
+
 }
 
 if (searchInput) {
+
   searchInput.addEventListener("input", () => {
+
     renderOutfits(searchInput.value);
+
   });
+
 }
 
 if (favoriteOnlyBtn) {
+
   favoriteOnlyBtn.addEventListener("click", () => {
+
     favoriteOnly = !favoriteOnly;
 
     favoriteOnlyBtn.textContent =
@@ -282,11 +359,20 @@ if (favoriteOnlyBtn) {
       favoriteOnly
     );
 
-    renderOutfits(searchInput ? searchInput.value : "");
+    renderOutfits(
+      searchInput
+        ? searchInput.value
+        : ""
+    );
+
   });
+
 }
 
-window.toggleFavorite = toggleFavorite;
-window.searchByTag = searchByTag;
+window.toggleFavorite =
+  toggleFavorite;
+
+window.searchByTag =
+  searchByTag;
 
 loadOutfits();
