@@ -49,7 +49,15 @@ async function loadOutfits() {
       ...docItem.data()
     }));
 
-  renderPopularTags();
+renderPopularTags();
+
+const params = new URLSearchParams(window.location.search);
+const tag = params.get("tag");
+
+if (tag && searchInput) {
+  searchInput.value = tag;
+  renderOutfits(tag);
+} else {
   renderOutfits();
 }
 
@@ -243,10 +251,7 @@ function renderOutfits(keyword = "") {
 }
 
 function searchByTag(tag) {
-  if (!searchInput) return;
-
-  searchInput.value = tag;
-  renderOutfits(tag);
+  location.href = `posts.html?tag=${encodeURIComponent(tag)}`;
 }
 
 if (searchInput) {
