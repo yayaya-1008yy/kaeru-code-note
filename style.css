@@ -661,16 +661,3 @@ input:focus {
   font-weight: 700;
   color: #333;
 }
-
-.detail-post-nav {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  margin: 28px 0 90px;
-}
-
-.detail-post-nav a,
-.detail-post-nav span {
-  flex: 1;
-  text-align: center;
-}
