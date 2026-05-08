@@ -99,6 +99,26 @@ function copyCode(code) {
 
 }
 
+function reportOutfit(title) {
+
+  const reason =
+    prompt(
+      `「${title}」を通報します。\n理由を入力してください。`
+    );
+
+  if (!reason) return;
+
+  alert(
+    "通報を受け付けました。\nご協力ありがとうございます。"
+  );
+
+  console.log("通報内容:", {
+    title,
+    reason
+  });
+
+}
+
 function swipeImage(direction) {
 
   const outfit =
@@ -352,6 +372,13 @@ function renderDetail() {
       ／ ♥ ${outfit.favoriteCount || 0}
     </p>
 
+    <button
+      class="delete-btn"
+      onclick="reportOutfit('${outfit.title}')"
+    >
+      通報する
+    </button>
+
     <div class="detail-tags">
       ${tagHtml}
     </div>
@@ -404,6 +431,9 @@ window.deleteOutfit =
 
 window.copyCode =
   copyCode;
+
+window.reportOutfit =
+  reportOutfit;
 
 onAuthStateChanged(auth, user => {
 
