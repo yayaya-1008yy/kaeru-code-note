@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>投稿一覧｜買えるコーデ帳</title>
+  <title>マイページ｜買えるコーデ帳</title>
   <link rel="stylesheet" href="style.css">
 </head>
 
@@ -22,50 +22,10 @@
 <main class="page">
 
   <div class="page-title">
-    <p class="eyebrow">POSTS</p>
-    <h1>投稿一覧</h1>
-
-    <p id="tagPageTitle" class="tag-page-title"></p>
-
-    <p>
-      画像をクリックすると、
-      詳しいコーデページが開きます。
-    </p>
+    <p class="eyebrow">MY PAGE</p>
+    <h1>自分の投稿</h1>
+    <p>あなたが投稿したコーデ一覧です。</p>
   </div>
-
-  <section class="search-box">
-    <input
-      id="searchInput"
-      placeholder="コーデ名・タグ・商品コードで検索"
-    >
-  </section>
-
-  <div class="sort-box">
-
-    <button id="newSortBtn" class="sort-btn active">
-      新着順
-    </button>
-
-    <button id="popularSortBtn" class="sort-btn">
-      人気順
-    </button>
-
-    <button id="trendingSortBtn" class="sort-btn">
-      急上昇
-    </button>
-
-  </div>
-
-  <div class="favorite-filter">
-    <button id="favoriteOnlyBtn" class="sub-btn">
-      ♡ お気に入りだけ表示
-    </button>
-  </div>
-
-  <section class="popular-tags-box">
-    <h2>人気タグ</h2>
-    <div id="popularTags"></div>
-  </section>
 
   <section id="outfitList" class="post-grid"></section>
 
@@ -100,7 +60,7 @@
 
 </nav>
 
-<script type="module" src="script.js"></script>
+<script type="module" src="mypage.js"></script>
 
 </body>
 </html>
