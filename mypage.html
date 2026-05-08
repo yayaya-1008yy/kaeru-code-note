@@ -10,24 +10,102 @@
 <body>
 
 <header class="site-header">
-  <a class="logo" href="index.html">KAERU CODE NOTE</a>
+
+  <a class="logo" href="index.html">
+    KAERU CODE NOTE
+  </a>
 
   <nav>
     <a href="posts.html">投稿を見る</a>
     <a href="upload.html">投稿する</a>
     <a href="mypage.html">マイページ</a>
   </nav>
+
 </header>
 
 <main class="page">
 
   <div class="page-title">
+
     <p class="eyebrow">MY PAGE</p>
-    <h1>自分の投稿</h1>
-    <p>あなたが投稿したコーデ一覧です。</p>
+
+    <h1>マイページ</h1>
+
+    <p>
+      自分の投稿を管理できます。
+    </p>
+
   </div>
 
-  <section id="outfitList" class="post-grid"></section>
+  <!-- ログイン -->
+  <section class="form-box" id="authBox">
+
+    <div class="form-section">
+
+      <h2>ログイン / 会員登録</h2>
+
+      <input
+        id="email"
+        type="email"
+        placeholder="メールアドレス"
+      >
+
+      <input
+        id="password"
+        type="password"
+        placeholder="パスワード"
+      >
+
+      <button
+        type="button"
+        class="main-btn full-btn"
+        id="loginBtn"
+      >
+        ログイン
+      </button>
+
+      <button
+        type="button"
+        class="sub-btn full-btn"
+        id="registerBtn"
+      >
+        新規登録
+      </button>
+
+    </div>
+
+  </section>
+
+  <!-- マイページ -->
+  <section
+    class="form-box"
+    id="myPageArea"
+    style="display:none;"
+  >
+
+    <div class="login-user-box">
+
+      <p>
+        ログイン中：
+        <span id="loginUserEmail"></span>
+      </p>
+
+      <button
+        type="button"
+        class="sub-btn"
+        id="logoutBtn"
+      >
+        ログアウト
+      </button>
+
+    </div>
+
+    <section
+      id="outfitList"
+      class="post-grid"
+    ></section>
+
+  </section>
 
 </main>
 
