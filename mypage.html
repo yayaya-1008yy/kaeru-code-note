@@ -2,10 +2,26 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/png" href="favicon.png">
-  <title>マイページ｜買えるコーデ帳</title>
-  <link rel="stylesheet" href="style.css">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <link
+    rel="icon"
+    type="image/png"
+    href="favicon.png"
+  >
+
+  <title>
+    マイページ｜買えるコーデ帳
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
 </head>
 
 <body>
@@ -28,9 +44,13 @@
 
   <div class="page-title">
 
-    <p class="eyebrow">MY PAGE</p>
+    <p class="eyebrow">
+      MY PAGE
+    </p>
 
-    <h1>マイページ</h1>
+    <h1>
+      マイページ
+    </h1>
 
     <p>
       自分の投稿を管理できます。
@@ -39,11 +59,17 @@
   </div>
 
   <!-- ログイン -->
-  <section class="form-box" id="authBox">
+
+  <section
+    class="form-box"
+    id="authBox"
+  >
 
     <div class="form-section">
 
-      <h2>ログイン / 会員登録</h2>
+      <h2>
+        ログイン / 会員登録
+      </h2>
 
       <input
         id="email"
@@ -78,46 +104,47 @@
   </section>
 
   <!-- マイページ -->
+
   <section
     class="form-box"
     id="myPageArea"
     style="display:none;"
   >
 
-<div class="login-user-box">
+    <div class="login-user-box">
 
-  <p>
-    ログイン中：
-    <span id="loginUserEmail"></span>
-  </p>
+      <p>
+        ログイン中：
+        <span id="loginUserEmail"></span>
+      </p>
 
-  <div
-    style="
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      margin-top:12px;
-    "
-  >
+      <div
+        style="
+          display:flex;
+          gap:10px;
+          flex-wrap:wrap;
+          margin-top:12px;
+        "
+      >
 
-    <a
-      class="main-btn"
-      href="profile.html"
-    >
-      プロフィール編集
-    </a>
+        <a
+          class="main-btn"
+          href="profile.html"
+        >
+          プロフィール編集
+        </a>
 
-    <button
-      type="button"
-      class="sub-btn"
-      id="logoutBtn"
-    >
-      ログアウト
-    </button>
+        <button
+          type="button"
+          class="sub-btn"
+          id="logoutBtn"
+        >
+          ログアウト
+        </button>
 
-  </div>
+      </div>
 
-</div>
+    </div>
 
     <section
       id="outfitList"
@@ -127,6 +154,30 @@
   </section>
 
 </main>
+
+<footer class="site-footer">
+
+  <div class="footer-inner">
+
+    <div class="footer-logo">
+      © KAERU CODE NOTE
+    </div>
+
+    <div class="footer-links">
+
+      <a href="terms.html">
+        利用規約
+      </a>
+
+      <a href="privacy.html">
+        プライバシーポリシー
+      </a>
+
+    </div>
+
+  </div>
+
+</footer>
 
 <nav class="bottom-nav">
 
@@ -157,31 +208,10 @@
 
 </nav>
 
-<script type="module" src="mypage.js"></script>
-
-<footer class="site-footer">
-
-  <div class="footer-inner">
-
-    <div class="footer-logo">
-      © KAERU CODE NOTE
-    </div>
-
-    <div class="footer-links">
-
-      <a href="terms.html">
-        利用規約
-      </a>
-
-      <a href="privacy.html">
-        プライバシーポリシー
-      </a>
-
-    </div>
-
-  </div>
-
-</footer>
+<script
+  type="module"
+  src="mypage.js"
+></script>
 
 </body>
 </html>
