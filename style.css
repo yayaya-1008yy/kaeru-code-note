@@ -1500,3 +1500,32 @@ input {
 #myPageArea > .post-grid {
   margin-top: 24px;
 }
+
+.profile-info-list {
+  display: grid;
+  gap: 10px;
+}
+
+.profile-info-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+
+  background: #f8fcff;
+  border: 1px solid #e5f4f8;
+  border-radius: 18px;
+
+  padding: 13px 15px;
+}
+
+.profile-info-item span {
+  color: #8a9aa3;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.profile-info-item strong {
+  color: #111;
+  font-size: 13px;
+  text-align: right;
+}
