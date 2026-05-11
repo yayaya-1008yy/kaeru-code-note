@@ -34,32 +34,96 @@ const favoriteStyleInput =
 const favoriteColorInput =
   document.getElementById("favoriteColor");
 
+const iconInput =
+  document.getElementById("iconInput");
+
+const iconPreview =
+  document.getElementById("iconPreview");
+
 const saveProfileBtn =
   document.getElementById("saveProfileBtn");
 
 let currentUser = null;
+let iconImage = "";
 
 onAuthStateChanged(auth, async (user) => {
-
   if (!user) {
-
     alert("ログインしてください");
-
     location.href = "mypage.html";
-
     return;
   }
 
   currentUser = user;
-
   loadProfile();
-
 });
 
+function compressIcon(file) {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+
+    reader.onload = e => {
+      const img = new Image();
+
+      img.onload = () => {
+        const size = 240;
+
+        const canvas =
+          document.createElement("canvas");
+
+        const ctx =
+          canvas.getContext("2d");
+
+        canvas.width = size;
+        canvas.height = size;
+
+        const minSide =
+          Math.min(img.width, img.height);
+
+        const sx =
+          (img.width - minSide) / 2;
+
+        const sy =
+          (img.height - minSide) / 2;
+
+        ctx.drawImage(
+          img,
+          sx,
+          sy,
+          minSide,
+          minSide,
+          0,
+          0,
+          size,
+          size
+        );
+
+        const result =
+          canvas.toDataURL("image/jpeg", 0.55);
+
+        resolve(result);
+      };
+
+      img.src = e.target.result;
+    };
+
+    reader.readAsDataURL(file);
+  });
+}
+
+if (iconInput) {
+  iconInput.addEventListener("change", async () => {
+    if (!iconInput.files || !iconInput.files[0]) return;
+
+    iconImage =
+      await compressIcon(iconInput.files[0]);
+
+    iconPreview.src = iconImage;
+    iconPreview.style.display = "block";
+  });
+}
+
 async function loadProfile() {
-
   try {
-
     const profileRef =
       doc(db, "profiles", currentUser.uid);
 
@@ -67,7 +131,6 @@ async function loadProfile() {
       await getDoc(profileRef);
 
     if (profileSnap.exists()) {
-
       const data =
         profileSnap.data();
 
@@ -92,14 +155,17 @@ async function loadProfile() {
       favoriteColorInput.value =
         data.favoriteColor || "";
 
+      iconImage =
+        data.iconImage || "";
+
+      if (iconImage && iconPreview) {
+        iconPreview.src = iconImage;
+        iconPreview.style.display = "block";
+      }
     }
-
   } catch (error) {
-
     console.error(error);
-
   }
-
 }
 
 saveProfileBtn.addEventListener(
@@ -108,16 +174,13 @@ saveProfileBtn.addEventListener(
 );
 
 async function saveProfile() {
-
   if (!currentUser) return;
 
   try {
-
     await setDoc(
       doc(db, "profiles", currentUser.uid),
       {
         uid: currentUser.uid,
-
         email: currentUser.email,
 
         displayName:
@@ -141,19 +204,16 @@ async function saveProfile() {
         favoriteColor:
           favoriteColorInput.value.trim(),
 
+        iconImage,
+
         updatedAt:
           Date.now()
       }
     );
 
     alert("プロフィールを保存しました！");
-
   } catch (error) {
-
     console.error(error);
-
     alert("保存に失敗しました");
-
   }
-
 }
