@@ -2,39 +2,104 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="icon" type="image/png" href="favicon.png">
-  <title>お気に入り｜買えるコーデ帳</title>
-  <link rel="stylesheet" href="style.css">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <link
+    rel="icon"
+    type="image/png"
+    href="favicon.png"
+  >
+
+  <title>
+    お気に入り｜買えるコーデ帳
+  </title>
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
 </head>
+
 <body>
 
 <header class="site-header">
-  <a class="logo" href="index.html">KAERU CODE NOTE</a>
+
+  <a class="logo" href="index.html">
+    KAERU CODE NOTE
+  </a>
 
   <nav>
     <a href="posts.html">投稿一覧</a>
     <a href="upload.html">投稿する</a>
+    <a href="mypage.html">マイページ</a>
   </nav>
+
 </header>
 
 <main class="page">
 
   <div class="page-title">
-    <p class="eyebrow">FAVORITES</p>
-    <h1>お気に入り</h1>
-    <p>保存したコーデ一覧。</p>
+
+    <p class="eyebrow">
+      FAVORITES
+    </p>
+
+    <h1>
+      お気に入り
+    </h1>
+
+    <p>
+      保存したコーデ一覧。
+    </p>
+
   </div>
 
   <section class="search-box">
-    <input id="favoriteSearchInput" placeholder="お気に入りを検索">
+
+    <input
+      id="favoriteSearchInput"
+      placeholder="お気に入りを検索"
+    >
+
   </section>
 
-  <section id="favoriteList" class="post-grid"></section>
+  <section
+    id="favoriteList"
+    class="post-grid"
+  ></section>
 
 </main>
 
+<footer class="site-footer">
+
+  <div class="footer-inner">
+
+    <div class="footer-logo">
+      © KAERU CODE NOTE
+    </div>
+
+    <div class="footer-links">
+
+      <a href="terms.html">
+        利用規約
+      </a>
+
+      <a href="privacy.html">
+        プライバシーポリシー
+      </a>
+
+    </div>
+
+  </div>
+
+</footer>
+
 <nav class="bottom-nav">
+
   <a href="index.html">
     <span>⌂</span>
     <small>HOME</small>
@@ -54,36 +119,63 @@
     <span>♡</span>
     <small>LIKE</small>
   </a>
+
+  <a href="mypage.html">
+    <span>☻</span>
+    <small>MY</small>
+  </a>
+
 </nav>
 
 <script>
+
 const outfits =
-  JSON.parse(localStorage.getItem("outfits")) || [];
+  JSON.parse(
+    localStorage.getItem("outfits")
+  ) || [];
 
 const favoriteOutfits =
-  JSON.parse(localStorage.getItem("favoriteOutfits")) || [];
+  JSON.parse(
+    localStorage.getItem("favoriteOutfits")
+  ) || [];
 
 const favoriteList =
   document.getElementById("favoriteList");
 
 const favoriteSearchInput =
-  document.getElementById("favoriteSearchInput");
-
-favoriteSearchInput.addEventListener("input", () => {
-  renderFavorites(
-    favoriteSearchInput.value
+  document.getElementById(
+    "favoriteSearchInput"
   );
-});
+
+favoriteSearchInput.addEventListener(
+  "input",
+  () => {
+    renderFavorites(
+      favoriteSearchInput.value
+    );
+  }
+);
 
 function toggleFavorite(id) {
+
   let updatedFavorites;
 
-  if (favoriteOutfits.includes(id)) {
+  if (
+    favoriteOutfits.includes(id)
+  ) {
+
     updatedFavorites =
-      favoriteOutfits.filter(item => item !== id);
+      favoriteOutfits.filter(
+        item => item !== id
+      );
+
   } else {
-    updatedFavorites =
-      [...favoriteOutfits, id];
+
+    updatedFavorites = [
+      ...favoriteOutfits,
+      id
+    ];
+
   }
 
   localStorage.setItem(
@@ -94,37 +186,63 @@ function toggleFavorite(id) {
   location.reload();
 }
 
-function renderFavorites(keyword = "") {
+function getMainImage(outfit) {
+
+  if (
+    outfit.images &&
+    outfit.images.length > 0
+  ) {
+    return outfit.images[0];
+  }
+
+  return outfit.image;
+
+}
+
+function renderFavorites(
+  keyword = ""
+) {
 
   favoriteList.innerHTML = "";
 
   const searchWord =
     keyword.toLowerCase().trim();
 
-  const filtered = outfits.filter(outfit => {
+  const filtered =
+    outfits.filter(outfit => {
 
-    const isFavorite =
-      favoriteOutfits.includes(outfit.id);
+      const isFavorite =
+        favoriteOutfits.includes(
+          outfit.id
+        );
 
-    const allText = `
-      ${outfit.title}
-      ${outfit.height}
-      ${outfit.tags.join(" ")}
-      ${outfit.items.map(
-        item => item.name + " " + item.code
-      ).join(" ")}
-    `.toLowerCase();
+      const allText = `
+        ${outfit.title}
+        ${outfit.height}
+        ${outfit.tags.join(" ")}
+        ${outfit.items.map(
+          item =>
+            item.name +
+            " " +
+            item.code
+        ).join(" ")}
+      `.toLowerCase();
 
-    return isFavorite &&
-      allText.includes(searchWord);
-  });
+      return (
+        isFavorite &&
+        allText.includes(searchWord)
+      );
+
+    });
 
   if (filtered.length === 0) {
+
     favoriteList.innerHTML = `
       <p class="empty">
         お気に入りがありません。
       </p>
     `;
+
     return;
   }
 
@@ -135,19 +253,58 @@ function renderFavorites(keyword = "") {
         `<span class="tag">#${tag}</span>`
       ).join("");
 
-    const card =
-      document.createElement("article");
+    const imageCount =
+      outfit.images &&
+      outfit.images.length
+        ? outfit.images.length
+        : 1;
 
-    card.className = "post-card";
+    const card =
+      document.createElement(
+        "article"
+      );
+
+    card.className =
+      "post-card";
 
     card.innerHTML = `
-      <img src="${outfit.image}" alt="${outfit.title}">
+
+      <div class="card-image-wrap">
+
+        <img
+          src="${getMainImage(outfit)}"
+          alt="${outfit.title}"
+        >
+
+        <div class="image-count-badge">
+          📷 ${imageCount}
+        </div>
+
+      </div>
 
       <div class="card-body">
 
-        <h3>${outfit.title}</h3>
+        <div class="card-title-row">
 
-        <p>${outfit.height}</p>
+          <h3>
+            ${outfit.title}
+          </h3>
+
+          <button
+            class="favorite-btn mini active"
+            onclick="
+              event.stopPropagation();
+              toggleFavorite(${outfit.id})
+            "
+          >
+            ♥
+          </button>
+
+        </div>
+
+        <p class="card-height">
+          ${outfit.height}
+        </p>
 
         <div class="card-tags">
           ${tagHtml}
@@ -156,15 +313,11 @@ function renderFavorites(keyword = "") {
         <div class="card-actions">
 
           <button
-            class="favorite-btn active"
-            onclick="event.stopPropagation(); toggleFavorite(${outfit.id})"
-          >
-            ♥ 保存済み
-          </button>
-
-          <button
             class="small-btn"
-            onclick="event.stopPropagation(); location.href='outfit.html?id=${outfit.id}'"
+            onclick="
+              event.stopPropagation();
+              location.href='outfit.html?id=${outfit.id}'
+            "
           >
             詳しく見る
           </button>
@@ -172,19 +325,27 @@ function renderFavorites(keyword = "") {
         </div>
 
       </div>
+
     `;
 
-    card.addEventListener("click", () => {
-      location.href =
-        `outfit.html?id=${outfit.id}`;
-    });
+    card.addEventListener(
+      "click",
+      () => {
+
+        location.href =
+          `outfit.html?id=${outfit.id}`;
+
+      }
+    );
 
     favoriteList.appendChild(card);
 
   });
+
 }
 
 renderFavorites();
+
 </script>
 
 </body>
