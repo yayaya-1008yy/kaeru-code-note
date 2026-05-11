@@ -991,3 +991,28 @@ color: #7edcff;
   }
 
 }
+
+/* スマホで画像が白くなる対策 */
+
+.post-card img,
+.detail-image,
+.thumbnail-image {
+  opacity: 1 !important;
+  animation: none !important;
+  transform: none !important;
+  filter: none !important;
+}
+
+.card-image-wrap img {
+  width: 100%;
+  display: block;
+  background: #f8fbfc;
+}
+
+/* 下ナビ5個対応 */
+
+@media (max-width: 700px) {
+  .bottom-nav {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
