@@ -250,8 +250,8 @@ function compressImage(file) {
 
       img.onload = () => {
 
-        let maxWidth = 500;
-        let quality = 0.45;
+let maxWidth = 380;
+let quality = 0.32;
 
         let result = "";
 
@@ -289,7 +289,7 @@ function compressImage(file) {
             );
 
           if (
-            result.length < 90000 ||
+result.length < 50000 ||
             maxWidth <= 350 ||
             quality <= 0.35
           ) {
