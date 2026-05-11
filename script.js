@@ -329,10 +329,17 @@ function renderOutfits(keyword = "") {
             ${favoriteOutfits.includes(outfit.id) ? '♥' : '♡'}
           </button>
         </div>
+<div class="card-user-row">
 
-        <p class="card-height">
-          ${outfit.height || ""}
-        </p>
+  <a
+    class="card-user-link"
+    href="user.html?uid=${outfit.userId || outfit.ownerId}"
+    onclick="event.stopPropagation();"
+  >
+    ${outfit.userName || "NO NAME"}
+  </a>
+
+</div>
 
         <div class="card-tags">
           ${tagHtml}

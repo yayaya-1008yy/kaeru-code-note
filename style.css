@@ -1616,3 +1616,24 @@ input {
 .post-user-link a:hover {
   opacity: 0.7;
 }
+
+.card-user-row {
+  margin: 8px 0 10px;
+}
+
+.card-user-link {
+
+  color: #7bcfe6;
+
+  font-size: 13px;
+
+  font-weight: 900;
+
+  text-decoration: none;
+
+  transition: 0.2s;
+}
+
+.card-user-link:hover {
+  opacity: 0.7;
+}
