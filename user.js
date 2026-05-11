@@ -21,6 +21,8 @@ const userProfileArea =
 const userOutfitList =
   document.getElementById("userOutfitList");
 
+let userOutfits = [];
+
 function getMainImage(outfit) {
   if (outfit.images && outfit.images.length > 0) {
     return outfit.images[0];
@@ -44,8 +46,8 @@ async function loadUserPage() {
     return;
   }
 
-  await loadProfile();
   await loadUserOutfits();
+  await loadProfile();
 }
 
 async function loadProfile() {
@@ -56,71 +58,94 @@ async function loadProfile() {
     const profileSnap =
       await getDoc(profileRef);
 
-    if (!profileSnap.exists()) {
-      userProfileArea.innerHTML = `
-        <div class="page-title">
-          <p class="eyebrow">USER</p>
-          <h1>NO NAME</h1>
-          <p>プロフィールはまだありません。</p>
-        </div>
-      `;
-      return;
+    let profile = {};
+
+    if (profileSnap.exists()) {
+      profile = profileSnap.data();
     }
 
-    const profile =
-      profileSnap.data();
+    const name =
+      profile.displayName || "NO NAME";
+
+    const firstLetter =
+      name.slice(0, 1);
 
     userProfileArea.innerHTML = `
-      <div class="page-title">
-        <p class="eyebrow">USER PROFILE</p>
-        <h1>${profile.displayName || "NO NAME"}</h1>
-        <p>${profile.bio || "自己紹介はまだありません。"}</p>
-      </div>
+      <section class="user-hero-card">
 
-      <section class="form-box" style="margin-bottom:24px;">
-        <div class="profile-info-list">
+        <div class="user-avatar">
+          ${firstLetter}
+        </div>
 
-          ${profile.height ? `
-            <div class="profile-info-item">
-              <span>身長</span>
-              <strong>${profile.height}</strong>
+        <div class="user-hero-main">
+
+          <p class="eyebrow">
+            USER PROFILE
+          </p>
+
+          <h1>
+            ${name}
+          </h1>
+
+          <p class="user-bio">
+            ${profile.bio || "自己紹介はまだありません。"}
+          </p>
+
+          <div class="user-stats">
+
+            <div>
+              <strong>${userOutfits.length}</strong>
+              <span>POSTS</span>
             </div>
-          ` : ""}
 
-          ${profile.bodyType ? `
-            <div class="profile-info-item">
-              <span>体型・サイズ感</span>
-              <strong>${profile.bodyType}</strong>
-            </div>
-          ` : ""}
+            ${profile.height ? `
+              <div>
+                <strong>${profile.height}</strong>
+                <span>HEIGHT</span>
+              </div>
+            ` : ""}
 
-          ${profile.usualSize ? `
-            <div class="profile-info-item">
-              <span>よく買うサイズ</span>
-              <strong>${profile.usualSize}</strong>
-            </div>
-          ` : ""}
+            ${profile.usualSize ? `
+              <div>
+                <strong>${profile.usualSize}</strong>
+                <span>SIZE</span>
+              </div>
+            ` : ""}
 
-          ${profile.favoriteStyle ? `
-            <div class="profile-info-item">
-              <span>好きな系統</span>
-              <strong>${profile.favoriteStyle}</strong>
-            </div>
-          ` : ""}
-
-          ${profile.favoriteColor ? `
-            <div class="profile-info-item">
-              <span>好きな色</span>
-              <strong>${profile.favoriteColor}</strong>
-            </div>
-          ` : ""}
+          </div>
 
         </div>
+
       </section>
 
-      <div class="page-title" style="padding-top:20px;">
+      <section class="user-profile-details">
+
+        ${profile.bodyType ? `
+          <div>
+            <span>体型・サイズ感</span>
+            <strong>${profile.bodyType}</strong>
+          </div>
+        ` : ""}
+
+        ${profile.favoriteStyle ? `
+          <div>
+            <span>好きな系統</span>
+            <strong>${profile.favoriteStyle}</strong>
+          </div>
+        ` : ""}
+
+        ${profile.favoriteColor ? `
+          <div>
+            <span>好きな色</span>
+            <strong>${profile.favoriteColor}</strong>
+          </div>
+        ` : ""}
+
+      </section>
+
+      <div class="user-section-title">
         <p class="eyebrow">OUTFITS</p>
-        <h1>投稿一覧</h1>
+        <h2>投稿一覧</h2>
       </div>
     `;
 
@@ -146,7 +171,7 @@ async function loadUserOutfits() {
     const snapshot =
       await getDocs(q);
 
-    const userOutfits =
+    userOutfits =
       snapshot.docs
         .map(docItem => ({
           firebaseId: docItem.id,
