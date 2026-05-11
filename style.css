@@ -1595,3 +1595,24 @@ input {
   font-size: 13px;
   text-align: right;
 }
+
+.post-user-link {
+  margin: 18px 0 10px;
+}
+
+.post-user-link a {
+
+  color: #6fc8e2;
+
+  font-size: 14px;
+
+  font-weight: 900;
+
+  text-decoration: none;
+
+  transition: 0.2s;
+}
+
+.post-user-link a:hover {
+  opacity: 0.7;
+}

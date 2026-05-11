@@ -410,7 +410,11 @@ function renderDetail() {
 
     </div>
 
-    <div id="profileMiniCard"></div>
+<div class="post-user-link">
+  <a href="user.html?uid=${outfit.userId || outfit.ownerId}">
+    ${outfit.userName || "ユーザーページを見る"}
+  </a>
+</div>
 
     <p class="post-date">
       投稿日：${outfit.date || "投稿日なし"}
