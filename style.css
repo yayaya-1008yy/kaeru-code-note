@@ -1242,3 +1242,184 @@ input {
 .bottom-nav .center-post {
   background: #151515;
 }
+
+/* ===== 一気に韓国Pinterest風にする ===== */
+
+.page,
+.top-page {
+  width: min(1400px, 94%);
+}
+
+/* タイトル */
+
+.hero h1,
+.page-title h1 {
+
+  font-size: clamp(42px, 8vw, 92px);
+
+  line-height: 0.95;
+
+  letter-spacing: -4px;
+
+  font-weight: 900;
+
+  max-width: 8ch;
+}
+
+/* 投稿一覧 */
+
+.post-grid {
+
+  gap: 22px !important;
+
+  margin-top: 30px;
+}
+
+/* カード */
+
+.post-card {
+
+  border-radius: 34px !important;
+
+  overflow: hidden;
+
+  background: #fff;
+
+  box-shadow:
+    0 20px 50px rgba(120,160,180,0.10) !important;
+
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease !important;
+}
+
+.post-card:hover {
+
+  transform:
+    translateY(-8px);
+
+  box-shadow:
+    0 30px 70px rgba(120,160,180,0.16) !important;
+}
+
+/* 画像 */
+
+.card-image-wrap img {
+
+  aspect-ratio: 3 / 4;
+
+  object-fit: cover;
+
+  width: 100%;
+
+  display: block;
+}
+
+/* カード本文 */
+
+.card-body {
+
+  padding: 18px;
+}
+
+.card-title-row h3,
+.card-body h3 {
+
+  font-size: 15px;
+
+  line-height: 1.5;
+
+  font-weight: 900;
+
+  margin-bottom: 8px;
+}
+
+.card-height {
+
+  font-size: 12px;
+
+  color: #999;
+
+  margin-bottom: 12px;
+}
+
+/* タグ */
+
+.tag {
+
+  border-radius: 999px;
+
+  padding: 8px 12px;
+
+  background: #f4fcff;
+
+  color: #67c4df;
+
+  border: none;
+
+  font-size: 11px;
+}
+
+/* ボタン減らして洗練 */
+
+.card-actions {
+
+  margin-top: 14px;
+}
+
+.small-btn {
+
+  border-radius: 999px;
+
+  background: #f2fbff;
+
+  color: #111;
+
+  font-size: 12px;
+}
+
+/* 上ヘッダー */
+
+.site-header {
+
+  padding: 18px 5%;
+}
+
+/* 下ナビ */
+
+.bottom-nav {
+
+  left: 18px !important;
+  right: 18px !important;
+  bottom: 18px !important;
+
+  border-radius: 999px;
+
+  padding: 10px;
+
+  background:
+    rgba(255,255,255,0.75) !important;
+
+  backdrop-filter:
+    blur(18px);
+}
+
+/* 入力 */
+
+input {
+
+  height: 56px;
+
+  border-radius: 20px;
+
+  background: #fbfeff;
+}
+
+/* フォーム */
+
+.form-box {
+
+  border-radius: 36px;
+
+  padding: 30px;
+}
