@@ -7,7 +7,9 @@ import {
   collection,
   getDocs,
   query,
-  orderBy
+  orderBy,
+  doc,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
@@ -20,6 +22,7 @@ import {
 const authBox = document.getElementById("authBox");
 const myPageArea = document.getElementById("myPageArea");
 const outfitList = document.getElementById("outfitList");
+const profileSummary = document.getElementById("profileSummary");
 
 const emailInput = document.getElementById("email");
 const passwordInput = document.getElementById("password");
@@ -88,6 +91,56 @@ function getMainImage(outfit) {
   }
 
   return "https://placehold.co/600x800?text=NO+IMAGE";
+}
+
+async function loadProfile(user) {
+  if (!profileSummary) return;
+
+  profileSummary.innerHTML = `
+    <div class="form-box" style="margin-bottom:20px;">
+      <p class="empty">プロフィール読み込み中...</p>
+    </div>
+  `;
+
+  try {
+    const profileRef = doc(db, "profiles", user.uid);
+    const profileSnap = await getDoc(profileRef);
+
+    if (!profileSnap.exists()) {
+      profileSummary.innerHTML = `
+        <div class="form-box" style="margin-bottom:20px;">
+          <h2 style="margin-top:0;">プロフィール未設定</h2>
+          <p style="color:#666; line-height:1.7;">
+            プロフィール編集から、表示名と自己紹介を設定できます。
+          </p>
+        </div>
+      `;
+      return;
+    }
+
+    const profile = profileSnap.data();
+
+    profileSummary.innerHTML = `
+      <div class="form-box" style="margin-bottom:20px;">
+        <h2 style="margin-top:0;">
+          ${profile.displayName || "NO NAME"}
+        </h2>
+
+        <p style="color:#666; line-height:1.7;">
+          ${profile.bio || "自己紹介はまだありません。"}
+        </p>
+      </div>
+    `;
+
+  } catch (error) {
+    console.error(error);
+
+    profileSummary.innerHTML = `
+      <div class="form-box" style="margin-bottom:20px;">
+        <p class="empty">プロフィールを読み込めませんでした。</p>
+      </div>
+    `;
+  }
 }
 
 async function loadMyOutfits(user) {
@@ -207,6 +260,7 @@ onAuthStateChanged(auth, user => {
       loginUserEmail.textContent = user.email;
     }
 
+    loadProfile(user);
     loadMyOutfits(user);
 
   } else {
