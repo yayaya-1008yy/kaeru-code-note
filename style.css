@@ -1943,3 +1943,156 @@ input {
   }
 
 }
+
+/* ===== Pinterest風2列 ===== */
+
+.post-grid {
+
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 18px;
+
+  align-items: start;
+}
+
+/* PCは3列 */
+
+@media (min-width: 900px) {
+
+  .post-grid {
+
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+
+}
+
+/* カード */
+
+.post-card {
+
+  border-radius: 28px;
+
+  overflow: hidden;
+
+  background: #fff;
+
+  box-shadow:
+    0 14px 34px rgba(100,160,180,0.10);
+
+  transition: 0.25s ease;
+}
+
+.post-card:hover {
+
+  transform:
+    translateY(-6px);
+}
+
+/* 画像 */
+
+.card-image-wrap {
+
+  position: relative;
+}
+
+.card-image-wrap img {
+
+  width: 100%;
+
+  display: block;
+
+  aspect-ratio: 3 / 4;
+
+  object-fit: cover;
+
+  background: #f4f4f4;
+}
+
+/* 本文 */
+
+.card-body {
+
+  padding: 14px;
+}
+
+.card-title-row h3 {
+
+  font-size: 14px;
+
+  line-height: 1.5;
+
+  margin-bottom: 8px;
+
+  font-weight: 900;
+}
+
+/* タグ */
+
+.card-tags {
+
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 6px;
+
+  margin-bottom: 10px;
+}
+
+.tag {
+
+  background: #f3fbff;
+
+  border-radius: 999px;
+
+  padding: 6px 10px;
+
+  font-size: 10px;
+
+  border: none;
+
+  color: #69c6df;
+}
+
+/* 情報 */
+
+.card-info {
+
+  color: #888;
+
+  font-size: 11px;
+
+  line-height: 1.7;
+
+  margin-top: 10px;
+}
+
+/* 詳細ボタン */
+
+.full-btn {
+
+  margin-top: 12px;
+
+  border-radius: 999px;
+}
+
+/* 投稿者 */
+
+.card-user-link {
+
+  display: inline-block;
+
+  margin-bottom: 8px;
+
+  color: #74cde6;
+
+  font-size: 12px;
+
+  font-weight: 900;
+
+  text-decoration: none;
+}
