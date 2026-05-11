@@ -305,10 +305,13 @@ function renderOutfits(keyword = "") {
 
     card.innerHTML = `
       <div class="card-image-wrap">
-        <img
-          src="${getMainImage(outfit)}"
-          alt="${outfit.title || "コーデ画像"}"
-        >
+<img
+  src="${getMainImage(outfit)}"
+  alt="${outfit.title || "コーデ画像"}"
+  loading="eager"
+  decoding="sync"
+  style="opacity:1;"
+>
 
         <div class="image-count-badge">
           📷 ${imageCount}
