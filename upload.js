@@ -5,7 +5,9 @@ import {
 
 import {
   collection,
-  addDoc
+  addDoc,
+  doc,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
@@ -43,15 +45,19 @@ const imageInputs = document.querySelectorAll(".imageInput");
 const outfitAddBtn = document.getElementById("outfitAddBtn");
 
 async function register() {
+
   const email = emailInput.value.trim();
   const password = passwordInput.value.trim();
 
   if (!email || !password) {
+
     alert("メールアドレスとパスワードを入れてください");
+
     return;
   }
 
   try {
+
     await createUserWithEmailAndPassword(
       auth,
       email,
@@ -59,22 +65,31 @@ async function register() {
     );
 
     alert("登録できました！");
+
   } catch (error) {
+
     console.error(error);
+
     alert("登録に失敗しました");
+
   }
+
 }
 
 async function login() {
+
   const email = emailInput.value.trim();
   const password = passwordInput.value.trim();
 
   if (!email || !password) {
+
     alert("メールアドレスとパスワードを入れてください");
+
     return;
   }
 
   try {
+
     await signInWithEmailAndPassword(
       auth,
       email,
@@ -82,108 +97,171 @@ async function login() {
     );
 
     alert("ログインしました！");
+
   } catch (error) {
+
     console.error(error);
+
     alert("ログインに失敗しました");
+
   }
+
 }
 
 async function logout() {
+
   try {
+
     await signOut(auth);
+
     alert("ログアウトしました");
+
   } catch (error) {
+
     console.error(error);
+
     alert("ログアウトに失敗しました");
+
   }
+
 }
 
 function renderTags() {
+
   tagList.innerHTML = "";
 
   tags.forEach((tag, index) => {
-    const span = document.createElement("span");
+
+    const span =
+      document.createElement("span");
+
     span.className = "tag";
+
     span.textContent = `#${tag}`;
 
     span.onclick = () => {
+
       tags.splice(index, 1);
+
       renderTags();
+
     };
 
     tagList.appendChild(span);
+
   });
+
 }
 
 function addTag() {
-  const tag = tagInput.value.trim();
+
+  const tag =
+    tagInput.value.trim();
 
   if (!tag) {
+
     alert("タグを入力してね");
+
     return;
   }
 
   if (!tags.includes(tag)) {
+
     tags.push(tag);
+
   }
 
   tagInput.value = "";
+
   renderTags();
+
 }
 
 function renderItems() {
+
   itemList.innerHTML = "";
 
   items.forEach((item, index) => {
-    const div = document.createElement("div");
+
+    const div =
+      document.createElement("div");
+
     div.className = "item-chip";
 
     div.innerHTML = `
       ${item.name} / 商品コード：${item.code}
-      <button type="button" class="small-btn">削除</button>
+      <button type="button" class="small-btn">
+        削除
+      </button>
     `;
 
     div.querySelector("button").onclick = () => {
+
       items.splice(index, 1);
+
       renderItems();
+
     };
 
     itemList.appendChild(div);
+
   });
+
 }
 
 function addItem() {
-  const name = itemName.value.trim();
-  const code = itemCode.value.trim();
+
+  const name =
+    itemName.value.trim();
+
+  const code =
+    itemCode.value.trim();
 
   if (!name || !code) {
+
     alert("商品名とSHEIN商品コードを入れてね");
+
     return;
   }
 
-  items.push({ name, code });
+  items.push({
+    name,
+    code
+  });
 
   itemName.value = "";
   itemCode.value = "";
 
   renderItems();
+
 }
 
 function compressImage(file) {
+
   return new Promise(resolve => {
-    const reader = new FileReader();
+
+    const reader =
+      new FileReader();
 
     reader.onload = e => {
-      const img = new Image();
+
+      const img =
+        new Image();
 
       img.onload = () => {
+
         let maxWidth = 500;
         let quality = 0.45;
+
         let result = "";
 
         while (true) {
-          const canvas = document.createElement("canvas");
-          const ctx = canvas.getContext("2d");
+
+          const canvas =
+            document.createElement("canvas");
+
+          const ctx =
+            canvas.getContext("2d");
 
           const scale =
             img.width > maxWidth
@@ -205,7 +283,10 @@ function compressImage(file) {
           );
 
           result =
-            canvas.toDataURL("image/jpeg", quality);
+            canvas.toDataURL(
+              "image/jpeg",
+              quality
+            );
 
           if (
             result.length < 90000 ||
@@ -217,36 +298,89 @@ function compressImage(file) {
 
           maxWidth -= 100;
           quality -= 0.08;
+
         }
 
         resolve(result);
+
       };
 
       img.src = e.target.result;
+
     };
 
     reader.readAsDataURL(file);
+
   });
+
 }
 
 async function getSelectedImages() {
+
   const images = [];
 
   for (const input of imageInputs) {
-    if (input.files && input.files[0]) {
+
+    if (
+      input.files &&
+      input.files[0]
+    ) {
+
       const image =
         await compressImage(input.files[0]);
 
       images.push(image);
+
     }
+
   }
 
   return images;
+
+}
+
+async function getUserProfileName() {
+
+  if (!currentUser) return "";
+
+  try {
+
+    const profileRef =
+      doc(db, "profiles", currentUser.uid);
+
+    const profileSnap =
+      await getDoc(profileRef);
+
+    if (!profileSnap.exists()) {
+
+      return "";
+
+    }
+
+    const profile =
+      profileSnap.data();
+
+    return (
+      profile.displayName ||
+      ""
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    return "";
+
+  }
+
 }
 
 async function addOutfit() {
+
   if (!currentUser) {
+
     alert("ログインしてください");
+
     return;
   }
 
@@ -268,80 +402,156 @@ async function addOutfit() {
   if (
     !title ||
     images.length === 0 ||
-    !height ||
     items.length === 0
   ) {
-    alert("コーデ名・画像・身長・アイテムを入れてください");
+
+    alert(
+      "コーデ名・画像・アイテムを入れてください"
+    );
+
     return;
   }
 
+  const userName =
+    await getUserProfileName();
+
   const outfit = {
+
     id: Date.now(),
+
     title,
+
     image: images[0],
+
     images,
+
     height,
+
     tags: [...tags],
+
     items: [...items],
-    date: new Date().toLocaleDateString("ja-JP"),
+
+    date:
+      new Date().toLocaleDateString("ja-JP"),
+
     createdAt: Date.now(),
 
-    ownerId: currentUser.uid,
-    userId: currentUser.uid,
-    userEmail: currentUser.email,
+    ownerId:
+      currentUser.uid,
+
+    userId:
+      currentUser.uid,
+
+    userEmail:
+      currentUser.email,
+
+    userName,
 
     favoriteCount: 0,
+
     viewCount: 0
+
   };
 
   try {
+
     await addDoc(
       collection(db, "outfits"),
       outfit
     );
 
     alert("投稿できました！");
-    location.href = "posts.html";
+
+    location.href =
+      "posts.html";
 
   } catch (error) {
+
     console.error(error);
-    alert("投稿に失敗しました。ログイン状態かFirestoreルールを確認してください。");
+
+    alert(
+      "投稿に失敗しました。"
+    );
+
   }
+
 }
 
 onAuthStateChanged(auth, user => {
+
   currentUser = user;
 
   if (user) {
+
     authBox.style.display = "none";
+
     uploadForm.style.display = "block";
 
     if (loginUserEmail) {
-      loginUserEmail.textContent = user.email;
+
+      loginUserEmail.textContent =
+        user.email;
+
     }
 
   } else {
+
     authBox.style.display = "block";
+
     uploadForm.style.display = "none";
 
     if (loginUserEmail) {
-      loginUserEmail.textContent = "";
+
+      loginUserEmail.textContent =
+        "";
+
     }
+
   }
+
 });
 
-registerBtn.addEventListener("click", register);
-loginBtn.addEventListener("click", login);
-logoutBtn.addEventListener("click", logout);
+registerBtn.addEventListener(
+  "click",
+  register
+);
 
-tagAddBtn.addEventListener("click", addTag);
+loginBtn.addEventListener(
+  "click",
+  login
+);
 
-tagInput.addEventListener("keydown", e => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    addTag();
+logoutBtn.addEventListener(
+  "click",
+  logout
+);
+
+tagAddBtn.addEventListener(
+  "click",
+  addTag
+);
+
+tagInput.addEventListener(
+  "keydown",
+  e => {
+
+    if (e.key === "Enter") {
+
+      e.preventDefault();
+
+      addTag();
+
+    }
+
   }
-});
+);
 
-itemAddBtn.addEventListener("click", addItem);
-outfitAddBtn.addEventListener("click", addOutfit);
+itemAddBtn.addEventListener(
+  "click",
+  addItem
+);
+
+outfitAddBtn.addEventListener(
+  "click",
+  addOutfit
+);
