@@ -1637,3 +1637,140 @@ input {
 .card-user-link:hover {
   opacity: 0.7;
 }
+
+/* ===== ユーザーページ強化 ===== */
+
+#userProfileArea {
+
+  margin-bottom: 40px;
+}
+
+/* プロフィール上 */
+
+#userProfileArea .page-title {
+
+  padding-top: 20px;
+
+  text-align: left;
+}
+
+#userProfileArea .page-title h1 {
+
+  font-size: clamp(42px, 8vw, 82px);
+
+  line-height: 0.9;
+
+  letter-spacing: -4px;
+
+  margin-bottom: 14px;
+}
+
+#userProfileArea .page-title p {
+
+  max-width: 520px;
+
+  color: #777;
+
+  line-height: 1.9;
+}
+
+/* プロフィールカード */
+
+#userProfileArea .form-box {
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff 0%,
+      #f4fbff 100%
+    );
+
+  border: 1px solid #e6f4f8;
+
+  border-radius: 34px;
+
+  padding: 28px;
+
+  box-shadow:
+    0 20px 60px rgba(100,160,180,0.10);
+}
+
+/* 情報 */
+
+.profile-info-list {
+
+  display: grid;
+
+  gap: 12px;
+}
+
+.profile-info-item {
+
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  gap: 14px;
+
+  background: rgba(255,255,255,0.9);
+
+  border: 1px solid #e6f4f8;
+
+  border-radius: 18px;
+
+  padding: 14px 16px;
+}
+
+.profile-info-item span {
+
+  color: #8fa1a8;
+
+  font-size: 12px;
+
+  font-weight: 900;
+
+  letter-spacing: 1px;
+}
+
+.profile-info-item strong {
+
+  color: #111;
+
+  font-size: 13px;
+
+  text-align: right;
+}
+
+/* 投稿一覧タイトル */
+
+#userProfileArea .page-title:last-child {
+
+  padding-top: 36px;
+}
+
+/* ユーザー投稿カード */
+
+#userOutfitList .post-card {
+
+  transform: translateY(0);
+
+  transition:
+    0.25s ease;
+}
+
+#userOutfitList .post-card:hover {
+
+  transform:
+    translateY(-6px);
+}
+
+/* 投稿0件 */
+
+#userOutfitList .empty {
+
+  padding: 40px 0;
+
+  color: #999;
+}
