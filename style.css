@@ -1774,3 +1774,172 @@ input {
 
   color: #999;
 }
+
+/* ===== ユーザーページ 大幅デザイン ===== */
+
+.user-hero-card {
+  margin: 34px 0 22px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff 0%,
+      #eefaff 100%
+    );
+
+  border: 1px solid #dff4fb;
+  border-radius: 38px;
+
+  padding: 34px;
+
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 26px;
+
+  box-shadow:
+    0 24px 70px rgba(100,160,180,0.14);
+}
+
+.user-avatar {
+  width: 110px;
+  height: 110px;
+
+  border-radius: 999px;
+
+  background:
+    linear-gradient(
+      135deg,
+      #dff8ff,
+      #ffffff
+    );
+
+  border: 1px solid #d4f2fb;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 46px;
+  font-weight: 900;
+  color: #65c5df;
+
+  box-shadow:
+    0 14px 34px rgba(100,160,180,0.18);
+}
+
+.user-hero-main h1 {
+  margin: 0 0 12px;
+
+  font-size: clamp(42px, 7vw, 78px);
+  line-height: 0.95;
+  letter-spacing: -4px;
+}
+
+.user-bio {
+  color: #666;
+  line-height: 1.9;
+  max-width: 620px;
+}
+
+.user-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  margin-top: 22px;
+}
+
+.user-stats div {
+  min-width: 96px;
+
+  background: rgba(255,255,255,0.82);
+
+  border: 1px solid #e2f3f8;
+  border-radius: 22px;
+
+  padding: 13px 16px;
+}
+
+.user-stats strong {
+  display: block;
+
+  font-size: 20px;
+  font-weight: 900;
+}
+
+.user-stats span {
+  color: #8fa1a8;
+
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1.4px;
+}
+
+.user-profile-details {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 12px;
+
+  margin-bottom: 34px;
+}
+
+.user-profile-details div {
+  background: #ffffff;
+
+  border: 1px solid #e6f4f8;
+  border-radius: 24px;
+
+  padding: 18px;
+
+  box-shadow:
+    0 12px 34px rgba(100,160,180,0.08);
+}
+
+.user-profile-details span {
+  display: block;
+
+  color: #8fa1a8;
+
+  font-size: 11px;
+  font-weight: 900;
+
+  margin-bottom: 8px;
+}
+
+.user-profile-details strong {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.user-section-title {
+  margin: 20px 0 18px;
+}
+
+.user-section-title h2 {
+  margin: 0;
+
+  font-size: clamp(30px, 5vw, 54px);
+  letter-spacing: -2px;
+}
+
+@media (max-width: 700px) {
+
+  .user-hero-card {
+    grid-template-columns: 1fr;
+    padding: 26px;
+    border-radius: 32px;
+  }
+
+  .user-avatar {
+    width: 82px;
+    height: 82px;
+    font-size: 34px;
+  }
+
+  .user-profile-details {
+    grid-template-columns: 1fr;
+  }
+
+}
