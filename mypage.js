@@ -120,18 +120,103 @@ async function loadProfile(user) {
 
     const profile = profileSnap.data();
 
-    profileSummary.innerHTML = `
-      <div class="form-box" style="margin-bottom:20px;">
-        <h2 style="margin-top:0;">
+profileSummary.innerHTML = `
+
+  <div
+    class="form-box"
+    style="margin-bottom:20px;"
+  >
+
+    <div
+      style="
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:20px;
+        flex-wrap:wrap;
+      "
+    >
+
+      <div>
+
+        <p
+          style="
+            color:#8fd7ea;
+            font-size:12px;
+            font-weight:900;
+            letter-spacing:2px;
+            margin-bottom:8px;
+          "
+        >
+          PROFILE
+        </p>
+
+        <h2
+          style="
+            margin:0 0 10px;
+            font-size:34px;
+          "
+        >
           ${profile.displayName || "NO NAME"}
         </h2>
 
-        <p style="color:#666; line-height:1.7;">
+        <p
+          style="
+            color:#666;
+            line-height:1.8;
+            margin-bottom:18px;
+          "
+        >
           ${profile.bio || "自己紹介はまだありません。"}
         </p>
-      </div>
-    `;
 
+      </div>
+
+    </div>
+
+    <div
+      style="
+        display:flex;
+        flex-wrap:wrap;
+        gap:10px;
+      "
+    >
+
+      ${profile.height ? `
+        <span class="tag">
+          身長 ${profile.height}
+        </span>
+      ` : ""}
+
+      ${profile.bodyType ? `
+        <span class="tag">
+          ${profile.bodyType}
+        </span>
+      ` : ""}
+
+      ${profile.usualSize ? `
+        <span class="tag">
+          サイズ ${profile.usualSize}
+        </span>
+      ` : ""}
+
+      ${profile.favoriteStyle ? `
+        <span class="tag">
+          ${profile.favoriteStyle}
+        </span>
+      ` : ""}
+
+      ${profile.favoriteColor ? `
+        <span class="tag">
+          ${profile.favoriteColor}
+        </span>
+      ` : ""}
+
+    </div>
+
+  </div>
+
+`;
   } catch (error) {
     console.error(error);
 
