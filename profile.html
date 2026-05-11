@@ -45,14 +45,14 @@
   <div class="page-title">
     <p class="eyebrow">PROFILE</p>
     <h1>プロフィール編集</h1>
-    <p>名前と自己紹介を設定できます。</p>
+    <p>身長・サイズ感・好きな系統をまとめて登録できます。</p>
   </div>
 
   <section class="form-box" id="profileBox">
 
     <div class="form-section">
 
-      <h2>プロフィール</h2>
+      <h2>基本プロフィール</h2>
 
       <input
         id="displayName"
@@ -64,15 +64,52 @@
         placeholder="自己紹介 例：低身長コーデが好きです"
       >
 
-      <button
-        type="button"
-        class="main-btn full-btn"
-        id="saveProfileBtn"
+    </div>
+
+    <div class="form-section">
+
+      <h2>体型・サイズ</h2>
+
+      <input
+        id="height"
+        placeholder="身長 例：152cm"
       >
-        保存する
-      </button>
+
+      <input
+        id="bodyType"
+        placeholder="体型・サイズ感 例：骨格ウェーブ / 低身長"
+      >
+
+      <input
+        id="usualSize"
+        placeholder="よく買うサイズ 例：S / XS / 23.5cm"
+      >
 
     </div>
+
+    <div class="form-section">
+
+      <h2>好きな系統</h2>
+
+      <input
+        id="favoriteStyle"
+        placeholder="例：韓国っぽ、カジュアル、ガーリー"
+      >
+
+      <input
+        id="favoriteColor"
+        placeholder="好きな色 例：白、水色、黒"
+      >
+
+    </div>
+
+    <button
+      type="button"
+      class="main-btn full-btn"
+      id="saveProfileBtn"
+    >
+      保存する
+    </button>
 
   </section>
 

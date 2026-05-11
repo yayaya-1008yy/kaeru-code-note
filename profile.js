@@ -19,6 +19,21 @@ const displayNameInput =
 const bioTextInput =
   document.getElementById("bioText");
 
+const heightInput =
+  document.getElementById("height");
+
+const bodyTypeInput =
+  document.getElementById("bodyType");
+
+const usualSizeInput =
+  document.getElementById("usualSize");
+
+const favoriteStyleInput =
+  document.getElementById("favoriteStyle");
+
+const favoriteColorInput =
+  document.getElementById("favoriteColor");
+
 const saveProfileBtn =
   document.getElementById("saveProfileBtn");
 
@@ -62,6 +77,21 @@ async function loadProfile() {
       bioTextInput.value =
         data.bio || "";
 
+      heightInput.value =
+        data.height || "";
+
+      bodyTypeInput.value =
+        data.bodyType || "";
+
+      usualSizeInput.value =
+        data.usualSize || "";
+
+      favoriteStyleInput.value =
+        data.favoriteStyle || "";
+
+      favoriteColorInput.value =
+        data.favoriteColor || "";
+
     }
 
   } catch (error) {
@@ -95,6 +125,21 @@ async function saveProfile() {
 
         bio:
           bioTextInput.value.trim(),
+
+        height:
+          heightInput.value.trim(),
+
+        bodyType:
+          bodyTypeInput.value.trim(),
+
+        usualSize:
+          usualSizeInput.value.trim(),
+
+        favoriteStyle:
+          favoriteStyleInput.value.trim(),
+
+        favoriteColor:
+          favoriteColorInput.value.trim(),
 
         updatedAt:
           Date.now()
