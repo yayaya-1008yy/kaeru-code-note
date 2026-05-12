@@ -122,7 +122,7 @@ async function loadProfile() {
               <span>POSTS</span>
             </div>
 
-            <div>
+            <div class="stat-clickable" onclick="location.href='following.html?uid=${uid}'">
               <strong>${followingCount}</strong>
               <span>FOLLOW</span>
             </div>

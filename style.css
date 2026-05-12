@@ -2414,3 +2414,13 @@ input {
   color: #111;
   font-weight: 800;
 }
+
+.stat-clickable {
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.stat-clickable:hover {
+  transform: translateY(-2px);
+  opacity: 0.75;
+}
