@@ -40,15 +40,22 @@ style.textContent = `
     margin-bottom: 20px;
   }
 
-  .mypage-profile-icon {
+  .mypage-profile-icon,
+  .mypage-profile-icon-fallback {
     width: 96px;
     height: 96px;
     border-radius: 999px;
     object-fit: cover;
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border: 3px solid #e8f7fc;
     background: #f4fbff;
     box-shadow: 0 12px 30px rgba(100,160,180,0.16);
+    font-size: 38px;
+    font-weight: 900;
+    color: #65c5df;
+    flex-shrink: 0;
   }
 
   @media (max-width: 700px) {
@@ -59,6 +66,21 @@ style.textContent = `
   }
 `;
 document.head.appendChild(style);
+
+function getProfileIcon(profile) {
+  return (
+    profile.iconUrl ||
+    profile.photoURL ||
+    profile.photoUrl ||
+    profile.profileImage ||
+    profile.profileImageUrl ||
+    profile.avatarUrl ||
+    profile.avatar ||
+    profile.imageUrl ||
+    profile.image ||
+    ""
+  );
+}
 
 async function register() {
   const email = emailInput.value.trim();
@@ -140,16 +162,28 @@ async function loadProfile(user) {
     }
 
     const profile = profileSnap.data();
+    const iconSrc = getProfileIcon(profile);
+
+    const iconHtml = iconSrc
+      ? `
+        <img
+          class="mypage-profile-icon"
+          src="${iconSrc}"
+          alt=""
+          onerror="this.style.display='none'; this.insertAdjacentHTML('afterend', '<div class=&quot;mypage-profile-icon-fallback&quot;>☻</div>');"
+        >
+      `
+      : `
+        <div class="mypage-profile-icon-fallback">
+          ☻
+        </div>
+      `;
 
     profileSummary.innerHTML = `
       <div class="form-box" style="margin-bottom:20px;">
 
         <div class="mypage-profile-top">
-          <img
-            class="mypage-profile-icon"
-            src="${profile.iconUrl || profile.photoURL || "default-icon.png"}"
-            alt="プロフィールアイコン"
-          >
+          ${iconHtml}
 
           <div>
             <p style="
