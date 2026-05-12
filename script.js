@@ -9,7 +9,9 @@ import {
   getDoc,
   updateDoc,
   increment,
-  where
+  where,
+  setDoc,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
@@ -195,8 +197,8 @@ async function loadOutfits() {
       }));
 
     for (const outfit of outfits) {
-const uid =
-  outfit.userId || outfit.ownerId;
+      const uid =
+        outfit.ownerId || outfit.userId;
 
       const profile =
         await getUserProfile(uid);
@@ -327,6 +329,30 @@ async function toggleFavorite(id) {
 
       outfit.favoriteCount =
         (outfit.favoriteCount || 0) + 1;
+
+      const ownerUid =
+        outfit.ownerId || outfit.userId;
+
+      if (
+        auth.currentUser &&
+        ownerUid &&
+        auth.currentUser.uid !== ownerUid
+      ) {
+        const notificationId =
+          `favorite_${auth.currentUser.uid}_${outfit.id}_${Date.now()}`;
+
+        await setDoc(
+          doc(db, "notifications", notificationId),
+          {
+            type: "favorite",
+            fromUserId: auth.currentUser.uid,
+            toUserId: ownerUid,
+            outfitId: outfit.id,
+            outfitTitle: outfit.title || "無題のコーデ",
+            createdAt: serverTimestamp()
+          }
+        );
+      }
     }
 
     localStorage.setItem(
@@ -354,13 +380,13 @@ function renderOutfits(keyword = "") {
 
   let filteredOutfits =
     outfits.filter(outfit => {
-const ownerUid =
-  outfit.ownerId || outfit.userId;
+      const ownerUid =
+        outfit.ownerId || outfit.userId;
 
       if (isHomeFeed) {
-return followingIds.includes(ownerUid) ||
-       followingIds.includes(outfit.userId) ||
-       followingIds.includes(outfit.ownerId);
+        return followingIds.includes(ownerUid) ||
+          followingIds.includes(outfit.userId) ||
+          followingIds.includes(outfit.ownerId);
       }
 
       return true;
@@ -454,8 +480,8 @@ return followingIds.includes(ownerUid) ||
 
     card.className = "post-card";
 
-const uid =
-  outfit.userId || outfit.ownerId;
+    const uid =
+      outfit.ownerId || outfit.userId;
 
     const imageCount =
       outfit.images && outfit.images.length
