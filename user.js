@@ -1,4 +1,4 @@
-import { db } from "./firebase.js";
+import { db, auth } from "./firebase.js";
 
 import {
   collection,
@@ -6,8 +6,15 @@ import {
   query,
   orderBy,
   doc,
-  getDoc
+  getDoc,
+  setDoc,
+  deleteDoc,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const params =
   new URLSearchParams(window.location.search);
@@ -21,7 +28,12 @@ const userProfileArea =
 const userOutfitList =
   document.getElementById("userOutfitList");
 
+const followBtn =
+  document.getElementById("followBtn");
+
 let userOutfits = [];
+let currentUser = null;
+let isFollowing = false;
 
 function getMainImage(outfit) {
   if (outfit.images && outfit.images.length > 0) {
@@ -43,11 +55,17 @@ async function loadUserPage() {
   if (!uid) {
     userProfileArea.innerHTML =
       `<p class="empty">ユーザーが見つかりません。</p>`;
+
+    if (followBtn) {
+      followBtn.style.display = "none";
+    }
+
     return;
   }
 
   await loadUserOutfits();
   await loadProfile();
+  setupFollowButton();
 }
 
 async function loadProfile() {
@@ -73,12 +91,12 @@ async function loadProfile() {
     userProfileArea.innerHTML = `
       <section class="user-hero-card">
 
-<div
-  class="user-avatar"
-  style="${profile.iconImage ? `background-image:url('${profile.iconImage}');` : ""}"
->
-  ${profile.iconImage ? "" : firstLetter}
-</div>
+        <div
+          class="user-avatar"
+          style="${profile.iconImage ? `background-image:url('${profile.iconImage}');` : ""}"
+        >
+          ${profile.iconImage ? "" : firstLetter}
+        </div>
 
         <div class="user-hero-main">
 
@@ -212,6 +230,9 @@ async function loadUserOutfits() {
             ).join("")
           : "";
 
+      const outfitId =
+        outfit.firebaseId || outfit.id;
+
       card.innerHTML = `
         <div class="card-image-wrap">
           <img
@@ -239,7 +260,7 @@ async function loadUserOutfits() {
 
           <button
             class="small-btn full-btn"
-            onclick="location.href='outfit.html?id=${outfit.id}'"
+            onclick="location.href='outfit.html?id=${outfitId}'"
           >
             詳しく見る
           </button>
@@ -255,6 +276,101 @@ async function loadUserOutfits() {
     userOutfitList.innerHTML =
       `<p class="empty">投稿を読み込めませんでした。</p>`;
   }
+}
+
+function setupFollowButton() {
+  if (!followBtn) {
+    return;
+  }
+
+  onAuthStateChanged(auth, async user => {
+    currentUser = user;
+
+    if (!currentUser) {
+      followBtn.textContent = "ログインしてフォロー";
+      followBtn.onclick = () => {
+        location.href = "login.html";
+      };
+      return;
+    }
+
+    if (currentUser.uid === uid) {
+      followBtn.style.display = "none";
+      return;
+    }
+
+    followBtn.style.display = "inline-block";
+
+    await checkFollowing();
+
+    followBtn.onclick = async () => {
+      if (isFollowing) {
+        await unfollowUser();
+      } else {
+        await followUser();
+      }
+    };
+  });
+}
+
+async function checkFollowing() {
+  const followId =
+    `${currentUser.uid}_${uid}`;
+
+  const followRef =
+    doc(db, "follows", followId);
+
+  const followSnap =
+    await getDoc(followRef);
+
+  isFollowing =
+    followSnap.exists();
+
+  updateFollowButton();
+}
+
+function updateFollowButton() {
+  if (!followBtn) {
+    return;
+  }
+
+  if (isFollowing) {
+    followBtn.textContent = "フォロー中";
+    followBtn.classList.add("following");
+  } else {
+    followBtn.textContent = "フォロー";
+    followBtn.classList.remove("following");
+  }
+}
+
+async function followUser() {
+  const followId =
+    `${currentUser.uid}_${uid}`;
+
+  const followRef =
+    doc(db, "follows", followId);
+
+  await setDoc(followRef, {
+    followerId: currentUser.uid,
+    followingId: uid,
+    createdAt: serverTimestamp()
+  });
+
+  isFollowing = true;
+  updateFollowButton();
+}
+
+async function unfollowUser() {
+  const followId =
+    `${currentUser.uid}_${uid}`;
+
+  const followRef =
+    doc(db, "follows", followId);
+
+  await deleteDoc(followRef);
+
+  isFollowing = false;
+  updateFollowButton();
 }
 
 loadUserPage();
