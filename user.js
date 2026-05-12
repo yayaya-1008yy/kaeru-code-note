@@ -9,7 +9,8 @@ import {
   getDoc,
   setDoc,
   deleteDoc,
-  serverTimestamp
+  serverTimestamp,
+  where
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
@@ -25,6 +26,9 @@ const userOutfitList = document.getElementById("userOutfitList");
 let userOutfits = [];
 let currentUser = null;
 let isFollowing = false;
+
+let followersCount = 0;
+let followingCount = 0;
 
 function getMainImage(outfit) {
   if (outfit.images?.length > 0) return outfit.images[0];
@@ -42,10 +46,30 @@ async function loadUserPage() {
 
   onAuthStateChanged(auth, async user => {
     currentUser = user;
+
     await loadUserOutfits();
     await checkFollowing();
+    await loadFollowCounts();
     await loadProfile();
   });
+}
+
+async function loadFollowCounts() {
+  const followersQuery = query(
+    collection(db, "follows"),
+    where("followingId", "==", uid)
+  );
+
+  const followingQuery = query(
+    collection(db, "follows"),
+    where("followerId", "==", uid)
+  );
+
+  const followersSnap = await getDocs(followersQuery);
+  const followingSnap = await getDocs(followingQuery);
+
+  followersCount = followersSnap.size;
+  followingCount = followingSnap.size;
 }
 
 async function loadProfile() {
@@ -96,6 +120,16 @@ async function loadProfile() {
             <div>
               <strong>${userOutfits.length}</strong>
               <span>POSTS</span>
+            </div>
+
+            <div>
+              <strong>${followingCount}</strong>
+              <span>FOLLOW</span>
+            </div>
+
+            <div>
+              <strong>${followersCount}</strong>
+              <span>FOLLOWERS</span>
             </div>
 
             ${profile.height ? `
@@ -196,6 +230,8 @@ async function followUser() {
   });
 
   isFollowing = true;
+
+  await loadFollowCounts();
   await loadProfile();
 }
 
@@ -206,6 +242,8 @@ async function unfollowUser() {
   await deleteDoc(followRef);
 
   isFollowing = false;
+
+  await loadFollowCounts();
   await loadProfile();
 }
 
