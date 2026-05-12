@@ -39,18 +39,18 @@ style.textContent = `
 
   .card-user-icon,
   .card-user-icon-fallback {
-    width: 20px;
-    height: 20px;
+    width: 14px;
+    height: 14px;
     border-radius: 999px;
     object-fit: cover;
     flex-shrink: 0;
     background: #f4fbff;
-    border: 2px solid #e8f7fc;
+    border: 1px solid #e8f7fc;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #65c5df;
-    font-size: 10px;
+    font-size: 7px;
     font-weight: 900;
   }
 
