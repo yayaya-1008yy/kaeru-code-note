@@ -30,47 +30,82 @@ let currentUser = null;
 let selectedIconImage = "";
 
 onAuthStateChanged(auth, user => {
+
   if (!user) {
+
     alert("ログインしてください");
+
     location.href = "mypage.html";
+
     return;
+
   }
 
   currentUser = user;
+
   loadProfile();
+
 });
 
 function compressIcon(file) {
+
   return new Promise(resolve => {
-    const reader = new FileReader();
+
+    const reader =
+      new FileReader();
 
     reader.onload = e => {
-      const img = new Image();
+
+      const img =
+        new Image();
 
       img.onload = () => {
-        const size = 300;
-        const padding = 46;
-        const drawArea = size - padding * 2;
 
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
+        const size = 300;
+
+        const canvas =
+          document.createElement("canvas");
+
+        const ctx =
+          canvas.getContext("2d");
 
         canvas.width = size;
         canvas.height = size;
 
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 0, size, size);
+        ctx.clearRect(0, 0, size, size);
 
-        const scale = Math.min(
-          drawArea / img.width,
-          drawArea / img.height
+        ctx.save();
+
+        ctx.beginPath();
+
+        ctx.arc(
+          size / 2,
+          size / 2,
+          size / 2,
+          0,
+          Math.PI * 2
         );
 
-        const drawWidth = img.width * scale;
-        const drawHeight = img.height * scale;
+        ctx.closePath();
 
-        const dx = (size - drawWidth) / 2;
-        const dy = (size - drawHeight) / 2;
+        ctx.clip();
+
+        const scale = Math.max(
+          size / img.width,
+          size / img.height
+        );
+
+        const drawWidth =
+          img.width * scale;
+
+        const drawHeight =
+          img.height * scale;
+
+        const dx =
+          (size - drawWidth) / 2;
+
+        const dy =
+          (size - drawHeight) / 2;
 
         ctx.drawImage(
           img,
@@ -80,89 +115,182 @@ function compressIcon(file) {
           drawHeight
         );
 
-        resolve(canvas.toDataURL("image/jpeg", 0.78));
+        ctx.restore();
+
+        resolve(
+          canvas.toDataURL("image/png")
+        );
+
       };
 
       img.src = e.target.result;
+
     };
 
     reader.readAsDataURL(file);
+
   });
+
 }
 
 if (iconInput) {
-  iconInput.addEventListener("change", async () => {
-    if (!iconInput.files || !iconInput.files[0]) return;
 
-    selectedIconImage =
-      await compressIcon(iconInput.files[0]);
+  iconInput.addEventListener(
+    "change",
+    async () => {
 
-    iconPreview.src = selectedIconImage;
-    iconPreview.style.display = "block";
-  });
+      if (
+        !iconInput.files ||
+        !iconInput.files[0]
+      ) return;
+
+      selectedIconImage =
+        await compressIcon(
+          iconInput.files[0]
+        );
+
+      iconPreview.src =
+        selectedIconImage;
+
+      iconPreview.style.display =
+        "block";
+
+    }
+  );
+
 }
 
 async function loadProfile() {
+
   try {
+
     const profileRef =
-      doc(db, "profiles", currentUser.uid);
+      doc(
+        db,
+        "profiles",
+        currentUser.uid
+      );
 
     const profileSnap =
       await getDoc(profileRef);
 
     if (!profileSnap.exists()) return;
 
-    const data = profileSnap.data();
+    const data =
+      profileSnap.data();
 
-    displayNameInput.value = data.displayName || "";
-    bioTextInput.value = data.bio || "";
-    heightInput.value = data.height || "";
-    bodyTypeInput.value = data.bodyType || "";
-    usualSizeInput.value = data.usualSize || "";
-    favoriteStyleInput.value = data.favoriteStyle || "";
-    favoriteColorInput.value = data.favoriteColor || "";
+    displayNameInput.value =
+      data.displayName || "";
+
+    bioTextInput.value =
+      data.bio || "";
+
+    heightInput.value =
+      data.height || "";
+
+    bodyTypeInput.value =
+      data.bodyType || "";
+
+    usualSizeInput.value =
+      data.usualSize || "";
+
+    favoriteStyleInput.value =
+      data.favoriteStyle || "";
+
+    favoriteColorInput.value =
+      data.favoriteColor || "";
 
     if (data.iconImage) {
-      selectedIconImage = data.iconImage;
-      iconPreview.src = data.iconImage;
-      iconPreview.style.display = "block";
+
+      selectedIconImage =
+        data.iconImage;
+
+      iconPreview.src =
+        data.iconImage;
+
+      iconPreview.style.display =
+        "block";
+
     }
 
   } catch (error) {
+
     console.error(error);
+
   }
+
 }
 
-saveProfileBtn.addEventListener("click", saveProfile);
+saveProfileBtn.addEventListener(
+  "click",
+  saveProfile
+);
 
 async function saveProfile() {
+
   if (!currentUser) return;
 
   try {
+
     await setDoc(
-      doc(db, "profiles", currentUser.uid),
+
+      doc(
+        db,
+        "profiles",
+        currentUser.uid
+      ),
+
       {
+
         uid: currentUser.uid,
+
         email: currentUser.email,
 
-        displayName: displayNameInput.value.trim(),
-        bio: bioTextInput.value.trim(),
-        height: heightInput.value.trim(),
-        bodyType: bodyTypeInput.value.trim(),
-        usualSize: usualSizeInput.value.trim(),
-        favoriteStyle: favoriteStyleInput.value.trim(),
-        favoriteColor: favoriteColorInput.value.trim(),
+        displayName:
+          displayNameInput.value.trim(),
 
-        iconImage: selectedIconImage,
+        bio:
+          bioTextInput.value.trim(),
 
-        updatedAt: Date.now()
+        height:
+          heightInput.value.trim(),
+
+        bodyType:
+          bodyTypeInput.value.trim(),
+
+        usualSize:
+          usualSizeInput.value.trim(),
+
+        favoriteStyle:
+          favoriteStyleInput.value.trim(),
+
+        favoriteColor:
+          favoriteColorInput.value.trim(),
+
+        iconImage:
+          selectedIconImage,
+
+        updatedAt:
+          Date.now()
+
       },
+
       { merge: true }
+
     );
 
-    alert("プロフィールを保存しました！");
+    alert(
+      "プロフィールを保存しました！"
+    );
+
   } catch (error) {
+
     console.error(error);
-    alert("保存に失敗しました");
+
+    alert(
+      "保存に失敗しました"
+    );
+
   }
+
 }
