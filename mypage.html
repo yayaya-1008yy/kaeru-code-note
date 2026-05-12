@@ -2,72 +2,36 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <link
-    rel="icon"
-    type="image/png"
-    href="favicon.png"
-  >
-
-  <title>
-    マイページ｜買えるコーデ帳
-  </title>
-
-  <link
-    rel="stylesheet"
-    href="style.css"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="icon" type="image/png" href="favicon.png">
+  <title>マイページ｜買えるコーデ帳</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <header class="site-header">
-
-  <a class="logo" href="index.html">
-    KAERU CODE NOTE
-  </a>
+  <a class="logo" href="index.html">KAERU CODE NOTE</a>
 
   <nav>
     <a href="posts.html">投稿を見る</a>
     <a href="upload.html">投稿する</a>
     <a href="mypage.html">マイページ</a>
   </nav>
-
 </header>
 
 <main class="page">
 
   <div class="page-title">
-
-    <p class="eyebrow">
-      MY PAGE
-    </p>
-
-    <h1>
-      マイページ
-    </h1>
-
-    <p>
-      自分の投稿を管理できます。
-    </p>
-
+    <p class="eyebrow">MY PAGE</p>
+    <h1>マイページ</h1>
+    <p>自分の投稿を管理できます。</p>
   </div>
 
-  <section
-    class="form-box"
-    id="authBox"
-  >
+  <section class="form-box" id="authBox">
 
     <div class="form-section">
-
-      <h2>
-        ログイン / 会員登録
-      </h2>
+      <h2>ログイン / 会員登録</h2>
 
       <input
         id="email"
@@ -96,7 +60,6 @@
       >
         新規登録
       </button>
-
     </div>
 
   </section>
@@ -147,6 +110,38 @@
       class="profile-summary"
     ></div>
 
+    <div
+      class="form-box"
+      style="
+        margin:20px 0;
+        border:1px solid #ffd6d6;
+        background:#fff8f8;
+      "
+    >
+      <h3 style="margin-top:0; color:#d33;">
+        退会
+      </h3>
+
+      <p style="color:#666; line-height:1.7;">
+        アカウント / プロフィール / 投稿 / フォロー情報がすべて削除されます。
+      </p>
+
+      <input
+        id="deletePassword"
+        type="password"
+        placeholder="退会確認のためパスワードを入力"
+      >
+
+      <button
+        type="button"
+        class="delete-btn"
+        id="deleteAccountBtn"
+        style="margin-top:12px;"
+      >
+        退会する
+      </button>
+    </div>
+
     <section
       id="outfitList"
       class="post-grid"
@@ -157,31 +152,19 @@
 </main>
 
 <footer class="site-footer">
-
   <div class="footer-inner">
-
     <div class="footer-logo">
       © KAERU CODE NOTE
     </div>
 
     <div class="footer-links">
-
-      <a href="terms.html">
-        利用規約
-      </a>
-
-      <a href="privacy.html">
-        プライバシーポリシー
-      </a>
-
+      <a href="terms.html">利用規約</a>
+      <a href="privacy.html">プライバシーポリシー</a>
     </div>
-
   </div>
-
 </footer>
 
 <nav class="bottom-nav">
-
   <a href="index.html">
     <span>⌂</span>
     <small>HOME</small>
@@ -206,13 +189,9 @@
     <span>☻</span>
     <small>MY</small>
   </a>
-
 </nav>
 
-<script
-  type="module"
-  src="mypage.js"
-></script>
+<script type="module" src="mypage.js"></script>
 
 </body>
 </html>
