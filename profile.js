@@ -27,6 +27,7 @@ const iconPreview = document.getElementById("iconPreview");
 const saveProfileBtn = document.getElementById("saveProfileBtn");
 
 let currentUser = null;
+let selectedIconImage = "";
 
 onAuthStateChanged(auth, user => {
   if (!user) {
@@ -47,7 +48,9 @@ function compressIcon(file) {
       const img = new Image();
 
       img.onload = () => {
-        const size = 220;
+        const size = 300;
+        const padding = 46;
+        const drawArea = size - padding * 2;
 
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
@@ -59,8 +62,8 @@ function compressIcon(file) {
         ctx.fillRect(0, 0, size, size);
 
         const scale = Math.min(
-          size / img.width,
-          size / img.height
+          drawArea / img.width,
+          drawArea / img.height
         );
 
         const drawWidth = img.width * scale;
@@ -77,7 +80,7 @@ function compressIcon(file) {
           drawHeight
         );
 
-        resolve(canvas.toDataURL("image/jpeg", 0.75));
+        resolve(canvas.toDataURL("image/jpeg", 0.78));
       };
 
       img.src = e.target.result;
@@ -91,10 +94,10 @@ if (iconInput) {
   iconInput.addEventListener("change", async () => {
     if (!iconInput.files || !iconInput.files[0]) return;
 
-    const compressedIcon =
+    selectedIconImage =
       await compressIcon(iconInput.files[0]);
 
-    iconPreview.src = compressedIcon;
+    iconPreview.src = selectedIconImage;
     iconPreview.style.display = "block";
   });
 }
@@ -120,6 +123,7 @@ async function loadProfile() {
     favoriteColorInput.value = data.favoriteColor || "";
 
     if (data.iconImage) {
+      selectedIconImage = data.iconImage;
       iconPreview.src = data.iconImage;
       iconPreview.style.display = "block";
     }
@@ -133,11 +137,6 @@ saveProfileBtn.addEventListener("click", saveProfile);
 
 async function saveProfile() {
   if (!currentUser) return;
-
-  const iconImage =
-    iconPreview && iconPreview.src.startsWith("data:image")
-      ? iconPreview.src
-      : "";
 
   try {
     await setDoc(
@@ -154,7 +153,7 @@ async function saveProfile() {
         favoriteStyle: favoriteStyleInput.value.trim(),
         favoriteColor: favoriteColorInput.value.trim(),
 
-        iconImage,
+        iconImage: selectedIconImage,
 
         updatedAt: Date.now()
       },
