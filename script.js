@@ -40,13 +40,13 @@ style.textContent = `
 .card-user-icon,
 .card-user-icon-fallback {
 
-  width: 12px !important;
-  height: 12px !important;
+  width: 16px !important;
 
-  min-width: 12px !important;
-  min-height: 12px !important;
+  aspect-ratio: 1 / 1;
 
   border-radius: 999px;
+
+  overflow: hidden;
 
   object-fit: cover;
 
@@ -64,7 +64,7 @@ style.textContent = `
 
   color: #65c5df;
 
-  font-size: 6px !important;
+  font-size: 7px !important;
 
   font-weight: 900;
 }
