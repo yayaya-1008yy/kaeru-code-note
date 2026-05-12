@@ -37,22 +37,37 @@ style.textContent = `
     margin: 8px 0 10px;
   }
 
-  .card-user-icon,
-  .card-user-icon-fallback {
-    width: 14px;
-    height: 14px;
-    border-radius: 999px;
-    object-fit: cover;
-    flex-shrink: 0;
-    background: #f4fbff;
-    border: 1px solid #e8f7fc;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #65c5df;
-    font-size: 7px;
-    font-weight: 900;
-  }
+.card-user-icon,
+.card-user-icon-fallback {
+
+  width: 12px !important;
+  height: 12px !important;
+
+  min-width: 12px !important;
+  min-height: 12px !important;
+
+  border-radius: 999px;
+
+  object-fit: cover;
+
+  flex-shrink: 0;
+
+  background: #f4fbff;
+
+  border: 1px solid #e8f7fc;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: center;
+
+  color: #65c5df;
+
+  font-size: 6px !important;
+
+  font-weight: 900;
+}
 
   .card-user-link {
     color: #74cde6;
