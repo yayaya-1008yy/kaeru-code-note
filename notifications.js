@@ -6,7 +6,8 @@ import {
   query,
   where,
   doc,
-  getDoc
+  getDoc,
+  updateDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
@@ -42,7 +43,10 @@ async function loadNotifications(user) {
 
   const notifications =
     snap.docs
-      .map(docItem => docItem.data())
+      .map(docItem => ({
+        id: docItem.id,
+        ...docItem.data()
+      }))
       .sort((a, b) => {
         const aTime =
           a.createdAt?.seconds || 0;
@@ -71,19 +75,51 @@ async function loadNotifications(user) {
     const div = document.createElement("div");
     div.className = "notification-item";
 
-    div.innerHTML = `
-      <p>
-        <strong>${fromName}</strong> さんがあなたをフォローしました。
-      </p>
+    let message = "";
+    let button = "";
 
-      <button
-        class="small-btn"
-        onclick="location.href='user.html?uid=${data.fromUserId}'"
-      >
-        プロフィールを見る
-      </button>
+    if (data.type === "follow") {
+      message =
+        `<strong>${fromName}</strong> さんがあなたをフォローしました。`;
+
+      button = `
+        <button
+          class="small-btn"
+          onclick="location.href='user.html?uid=${data.fromUserId}'"
+        >
+          プロフィールを見る
+        </button>
+      `;
+    }
+
+    if (data.type === "favorite") {
+      message =
+        `<strong>${fromName}</strong> さんがあなたのコーデを保存しました♡`;
+
+      button = `
+        <button
+          class="small-btn"
+          onclick="location.href='outfit.html?id=${data.outfitId || data.postId}'"
+        >
+          投稿を見る
+        </button>
+      `;
+    }
+
+    div.innerHTML = `
+      <p>${message}</p>
+      ${button}
     `;
 
     notificationList.appendChild(div);
+
+    if (data.read === false) {
+      await updateDoc(
+        doc(db, "notifications", data.id),
+        {
+          read: true
+        }
+      );
+    }
   }
 }
