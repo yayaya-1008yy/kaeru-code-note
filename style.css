@@ -2424,3 +2424,31 @@ input {
   transform: translateY(-2px);
   opacity: 0.75;
 }
+
+@media (max-width: 600px) {
+  .main-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    width: 100%;
+  }
+
+  .main-stats > div {
+    min-width: 0;
+    text-align: center;
+    padding: 10px 4px;
+  }
+
+  .main-stats strong {
+    display: block;
+    font-size: 18px;
+    line-height: 1.2;
+  }
+
+  .main-stats span {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+}
