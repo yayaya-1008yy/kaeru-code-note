@@ -1,4 +1,4 @@
-import { db } from "./firebase.js";
+import { db, auth } from "./firebase.js";
 
 import {
   collection,
@@ -8,11 +8,17 @@ import {
   doc,
   getDoc,
   updateDoc,
-  increment
+  increment,
+  where
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 let outfits = [];
 let profileCache = {};
+let followingIds = [];
 
 let favoriteOutfits =
   JSON.parse(localStorage.getItem("favoriteOutfits")) || [];
@@ -22,11 +28,18 @@ let sortMode = "new";
 
 const outfitList = document.getElementById("outfitList");
 const searchInput = document.getElementById("searchInput");
-const popularTags = document.getElementById("popularTags");
+
+const popularTags =
+  document.getElementById("popularTags") ||
+  document.getElementById("trendTags");
+
 const favoriteOnlyBtn = document.getElementById("favoriteOnlyBtn");
 const newSortBtn = document.getElementById("newSortBtn");
 const popularSortBtn = document.getElementById("popularSortBtn");
 const trendingSortBtn = document.getElementById("trendingSortBtn");
+
+const isHomeFeed =
+  document.querySelector(".follow-feed-section") !== null;
 
 const style = document.createElement("style");
 
@@ -145,6 +158,22 @@ async function getUserProfile(uid) {
   }
 }
 
+async function loadFollowingIds(user) {
+  followingIds = [];
+
+  if (!user) return;
+
+  const q = query(
+    collection(db, "follows"),
+    where("followerId", "==", user.uid)
+  );
+
+  const snap = await getDocs(q);
+
+  followingIds =
+    snap.docs.map(docItem => docItem.data().followingId);
+}
+
 async function loadOutfits() {
   if (outfitList) {
     outfitList.innerHTML =
@@ -152,14 +181,12 @@ async function loadOutfits() {
   }
 
   try {
-    const q =
-      query(
-        collection(db, "outfits"),
-        orderBy("createdAt", "desc")
-      );
+    const q = query(
+      collection(db, "outfits"),
+      orderBy("createdAt", "desc")
+    );
 
-    const snapshot =
-      await getDocs(q);
+    const snapshot = await getDocs(q);
 
     outfits =
       snapshot.docs.map(docItem => ({
@@ -325,8 +352,20 @@ function renderOutfits(keyword = "") {
   const searchWord =
     keyword.trim().toLowerCase();
 
-  const filteredOutfits =
+  let filteredOutfits =
     outfits.filter(outfit => {
+      const ownerUid =
+        outfit.userId || outfit.ownerId;
+
+      if (isHomeFeed) {
+        return followingIds.includes(ownerUid);
+      }
+
+      return true;
+    });
+
+  filteredOutfits =
+    filteredOutfits.filter(outfit => {
       const titleText =
         (outfit.title || "").toLowerCase();
 
@@ -391,9 +430,19 @@ function renderOutfits(keyword = "") {
     return;
   }
 
+  if (isHomeFeed && followingIds.length === 0) {
+    outfitList.innerHTML = `
+      <p class="empty">
+        まだ誰もフォローしていません。<br>
+        気になるユーザーをフォローすると、ここに新着が出ます。
+      </p>
+    `;
+    return;
+  }
+
   if (filteredOutfits.length === 0) {
     outfitList.innerHTML =
-      `<p class="empty">検索に合う投稿がありません。</p>`;
+      `<p class="empty">表示できる投稿がありません。</p>`;
     return;
   }
 
@@ -574,4 +623,24 @@ if (trendingSortBtn) {
 window.toggleFavorite = toggleFavorite;
 window.searchByTag = searchByTag;
 
-loadOutfits();
+if (isHomeFeed) {
+  onAuthStateChanged(auth, async user => {
+    if (!user) {
+      if (outfitList) {
+        outfitList.innerHTML = `
+          <p class="empty">
+            ログインすると、フォロー中の新着コーデが表示されます。
+          </p>
+        `;
+      }
+
+      await loadOutfits();
+      return;
+    }
+
+    await loadFollowingIds(user);
+    await loadOutfits();
+  });
+} else {
+  loadOutfits();
+}
