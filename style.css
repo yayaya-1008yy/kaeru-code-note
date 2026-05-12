@@ -2353,3 +2353,28 @@ input {
 
   margin-bottom: 22px;
 }
+
+.follow-btn,
+#followBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 140px;
+  padding: 10px 22px;
+  border: none;
+  border-radius: 999px;
+  background: #111;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+#followBtn.following {
+  background: #d9f3ff;
+  color: #111;
+}
+
+#followBtn:hover {
+  opacity: 0.85;
+}
