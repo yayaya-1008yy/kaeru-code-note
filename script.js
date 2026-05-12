@@ -6,11 +6,13 @@ import {
   query,
   orderBy,
   doc,
+  getDoc,
   updateDoc,
   increment
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 let outfits = [];
+let profileCache = {};
 
 let favoriteOutfits =
   JSON.parse(localStorage.getItem("favoriteOutfits")) || [];
@@ -26,24 +28,74 @@ const newSortBtn = document.getElementById("newSortBtn");
 const popularSortBtn = document.getElementById("popularSortBtn");
 const trendingSortBtn = document.getElementById("trendingSortBtn");
 
+const style = document.createElement("style");
+style.textContent = `
+  .card-user-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 8px 0 10px;
+  }
+
+  .card-user-icon,
+  .card-user-icon-fallback {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: #f4fbff;
+    border: 2px solid #e8f7fc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #65c5df;
+    font-size: 14px;
+    font-weight: 900;
+  }
+
+  .card-user-link {
+    color: #74cde6;
+    font-size: 12px;
+    font-weight: 900;
+    text-decoration: none;
+  }
+`;
+document.head.appendChild(style);
+
 function getMainImage(outfit) {
-  if (outfit.images && outfit.images.length > 0) {
-    return outfit.images[0];
-  }
-
-  if (outfit.image) {
-    return outfit.image;
-  }
-
-  if (outfit.imageUrl) {
-    return outfit.imageUrl;
-  }
-
-  if (outfit.mainImage) {
-    return outfit.mainImage;
-  }
+  if (outfit.images && outfit.images.length > 0) return outfit.images[0];
+  if (outfit.image) return outfit.image;
+  if (outfit.imageUrl) return outfit.imageUrl;
+  if (outfit.mainImage) return outfit.mainImage;
 
   return "https://placehold.co/600x800?text=NO+IMAGE";
+}
+
+async function getUserProfile(uid) {
+  if (!uid) return null;
+
+  if (profileCache[uid]) {
+    return profileCache[uid];
+  }
+
+  try {
+    const profileRef = doc(db, "profiles", uid);
+    const profileSnap = await getDoc(profileRef);
+
+    if (!profileSnap.exists()) {
+      profileCache[uid] = null;
+      return null;
+    }
+
+    const profile = profileSnap.data();
+    profileCache[uid] = profile;
+
+    return profile;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
 }
 
 async function loadOutfits() {
@@ -68,7 +120,23 @@ async function loadOutfits() {
         ...docItem.data()
       }));
 
+    for (const outfit of outfits) {
+      const uid = outfit.userId || outfit.ownerId;
+      const profile = await getUserProfile(uid);
+
+      outfit.profileIcon =
+        profile && profile.iconImage
+          ? profile.iconImage
+          : "";
+
+      outfit.profileName =
+        profile && profile.displayName
+          ? profile.displayName
+          : outfit.userName || "NO NAME";
+    }
+
     renderPopularTags();
+    renderTrendTags();
 
     const params =
       new URLSearchParams(window.location.search);
@@ -116,8 +184,15 @@ function renderPopularTags() {
     if (!outfit.tags) return;
 
     outfit.tags.forEach(tag => {
-      tagCount[tag] =
-        (tagCount[tag] || 0) + 1;
+      const cleanTag =
+        String(tag)
+          .replace("#", "")
+          .trim();
+
+      if (!cleanTag) return;
+
+      tagCount[cleanTag] =
+        (tagCount[cleanTag] || 0) + 1;
     });
   });
 
@@ -145,6 +220,62 @@ function renderPopularTags() {
     });
 
     popularTags.appendChild(button);
+  });
+}
+
+function renderTrendTags() {
+  const trendTags =
+    document.getElementById("trendTags");
+
+  if (!trendTags) return;
+
+  trendTags.innerHTML = "";
+
+  const tagCount = {};
+
+  outfits.forEach(outfit => {
+    if (!outfit.tags) return;
+
+    outfit.tags.forEach(tag => {
+      const cleanTag =
+        String(tag)
+          .replace("#", "")
+          .trim();
+
+      if (!cleanTag) return;
+
+      tagCount[cleanTag] =
+        (tagCount[cleanTag] || 0) + 1;
+    });
+  });
+
+  const sortedTags =
+    Object.entries(tagCount)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10);
+
+  if (sortedTags.length === 0) {
+    trendTags.innerHTML =
+      `<p class="empty">まだタグがありません。</p>`;
+    return;
+  }
+
+  sortedTags.forEach(([tag, count]) => {
+    const button =
+      document.createElement("button");
+
+    button.className =
+      "trend-tag";
+
+    button.innerHTML =
+      `#${tag} <span>${count}</span>`;
+
+    button.addEventListener("click", () => {
+      location.href =
+        `posts.html?tag=${encodeURIComponent(tag)}`;
+    });
+
+    trendTags.appendChild(button);
   });
 }
 
@@ -216,6 +347,9 @@ function renderOutfits(keyword = "") {
       const heightText =
         (outfit.height || "").toLowerCase();
 
+      const userText =
+        (outfit.profileName || outfit.userName || "").toLowerCase();
+
       const tagText =
         outfit.tags
           ? outfit.tags.join(" ").toLowerCase()
@@ -229,7 +363,7 @@ function renderOutfits(keyword = "") {
           : "";
 
       const allText =
-        `${titleText} ${heightText} ${tagText} ${itemText}`;
+        `${titleText} ${heightText} ${userText} ${tagText} ${itemText}`;
 
       const matchesSearch =
         allText.includes(searchWord);
@@ -267,36 +401,13 @@ function renderOutfits(keyword = "") {
 
   if (outfits.length === 0) {
     outfitList.innerHTML =
-`
-  <div class="empty-state">
-    <div class="empty-icon">🫧</div>
-    <h2>まだ投稿がありません</h2>
-    <p>
-      最初のコーデを投稿して、<br>
-      このコーデ帳を育てていこう。
-    </p>
-    <a class="main-btn" href="upload.html">
-      投稿してみる
-    </a>
-  </div>
-`;
-
+      `<p class="empty">まだ投稿がありません。</p>`;
     return;
   }
 
   if (filteredOutfits.length === 0) {
     outfitList.innerHTML =
-`
-  <div class="empty-state">
-    <div class="empty-icon">🔍</div>
-    <h2>見つかりませんでした</h2>
-    <p>
-      キーワードを変えるか、<br>
-      ほかのタグで探してみてね。
-    </p>
-  </div>
-`;
-
+      `<p class="empty">検索に合う投稿がありません。</p>`;
     return;
   }
 
@@ -305,6 +416,24 @@ function renderOutfits(keyword = "") {
       document.createElement("article");
 
     card.className = "post-card";
+
+    const uid =
+      outfit.userId || outfit.ownerId;
+
+    const userIconHtml =
+      outfit.profileIcon
+        ? `
+          <img
+            class="card-user-icon"
+            src="${outfit.profileIcon}"
+            alt=""
+          >
+        `
+        : `
+          <div class="card-user-icon-fallback">
+            ☻
+          </div>
+        `;
 
     const tagHtml =
       outfit.tags &&
@@ -328,13 +457,13 @@ function renderOutfits(keyword = "") {
 
     card.innerHTML = `
       <div class="card-image-wrap">
-<img
-  src="${getMainImage(outfit)}"
-  alt="${outfit.title || "コーデ画像"}"
-  loading="eager"
-  decoding="sync"
-  style="opacity:1;"
->
+        <img
+          src="${getMainImage(outfit)}"
+          alt="${outfit.title || "コーデ画像"}"
+          loading="eager"
+          decoding="sync"
+          style="opacity:1;"
+        >
 
         <div class="image-count-badge">
           📷 ${imageCount}
@@ -346,23 +475,24 @@ function renderOutfits(keyword = "") {
           <h3>${outfit.title || "無題のコーデ"}</h3>
 
           <button
-            class="favorite-btn mini ${favoriteOutfits.includes(outfit.id) ? 'active' : ''}"
+            class="favorite-btn mini ${favoriteOutfits.includes(outfit.id) ? "active" : ""}"
             onclick="event.stopPropagation(); toggleFavorite(${outfit.id})"
           >
-            ${favoriteOutfits.includes(outfit.id) ? '♥' : '♡'}
+            ${favoriteOutfits.includes(outfit.id) ? "♥" : "♡"}
           </button>
         </div>
-<div class="card-user-row">
 
-  <a
-    class="card-user-link"
-    href="user.html?uid=${outfit.userId || outfit.ownerId}"
-    onclick="event.stopPropagation();"
-  >
-    ${outfit.userName || "NO NAME"}
-  </a>
+        <div class="card-user-row">
+          ${userIconHtml}
 
-</div>
+          <a
+            class="card-user-link"
+            href="user.html?uid=${uid}"
+            onclick="event.stopPropagation();"
+          >
+            ${outfit.profileName || "NO NAME"}
+          </a>
+        </div>
 
         <div class="card-tags">
           ${tagHtml}
@@ -399,17 +529,9 @@ function searchByTag(tag) {
 }
 
 function resetSortButtons() {
-  if (newSortBtn) {
-    newSortBtn.classList.remove("active");
-  }
-
-  if (popularSortBtn) {
-    popularSortBtn.classList.remove("active");
-  }
-
-  if (trendingSortBtn) {
-    trendingSortBtn.classList.remove("active");
-  }
+  if (newSortBtn) newSortBtn.classList.remove("active");
+  if (popularSortBtn) popularSortBtn.classList.remove("active");
+  if (trendingSortBtn) trendingSortBtn.classList.remove("active");
 }
 
 if (searchInput) {
