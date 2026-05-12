@@ -13,40 +13,22 @@ import {
   getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const displayNameInput =
-  document.getElementById("displayName");
+const displayNameInput = document.getElementById("displayName");
+const bioTextInput = document.getElementById("bioText");
+const heightInput = document.getElementById("height");
+const bodyTypeInput = document.getElementById("bodyType");
+const usualSizeInput = document.getElementById("usualSize");
+const favoriteStyleInput = document.getElementById("favoriteStyle");
+const favoriteColorInput = document.getElementById("favoriteColor");
 
-const bioTextInput =
-  document.getElementById("bioText");
+const iconInput = document.getElementById("iconInput");
+const iconPreview = document.getElementById("iconPreview");
 
-const heightInput =
-  document.getElementById("height");
-
-const bodyTypeInput =
-  document.getElementById("bodyType");
-
-const usualSizeInput =
-  document.getElementById("usualSize");
-
-const favoriteStyleInput =
-  document.getElementById("favoriteStyle");
-
-const favoriteColorInput =
-  document.getElementById("favoriteColor");
-
-const iconInput =
-  document.getElementById("iconInput");
-
-const iconPreview =
-  document.getElementById("iconPreview");
-
-const saveProfileBtn =
-  document.getElementById("saveProfileBtn");
+const saveProfileBtn = document.getElementById("saveProfileBtn");
 
 let currentUser = null;
-let iconImage = "";
 
-onAuthStateChanged(auth, async (user) => {
+onAuthStateChanged(auth, user => {
   if (!user) {
     alert("ログインしてください");
     location.href = "mypage.html";
@@ -67,23 +49,15 @@ function compressIcon(file) {
       img.onload = () => {
         const size = 80;
 
-        const canvas =
-          document.createElement("canvas");
-
-        const ctx =
-          canvas.getContext("2d");
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
 
         canvas.width = size;
         canvas.height = size;
 
-        const minSide =
-          Math.min(img.width, img.height);
-
-        const sx =
-          (img.width - minSide) / 2;
-
-        const sy =
-          (img.height - minSide) / 2;
+        const minSide = Math.min(img.width, img.height);
+        const sx = (img.width - minSide) / 2;
+        const sy = (img.height - minSide) / 2;
 
         ctx.drawImage(
           img,
@@ -97,10 +71,7 @@ function compressIcon(file) {
           size
         );
 
-        const result =
-canvas.toDataURL("image/webp", 0.18);
-
-        resolve(result);
+        resolve(canvas.toDataURL("image/jpeg", 0.25));
       };
 
       img.src = e.target.result;
@@ -110,17 +81,15 @@ canvas.toDataURL("image/webp", 0.18);
   });
 }
 
-if (iconInput) {
-  iconInput.addEventListener("change", async () => {
-    if (!iconInput.files || !iconInput.files[0]) return;
+iconInput.addEventListener("change", async () => {
+  if (!iconInput.files || !iconInput.files[0]) return;
 
-    iconImage =
-      await compressIcon(iconInput.files[0]);
+  const compressedIcon =
+    await compressIcon(iconInput.files[0]);
 
-    iconPreview.src = iconImage;
-    iconPreview.style.display = "block";
-  });
-}
+  iconPreview.src = compressedIcon;
+  iconPreview.style.display = "block";
+});
 
 async function loadProfile() {
   try {
@@ -130,51 +99,37 @@ async function loadProfile() {
     const profileSnap =
       await getDoc(profileRef);
 
-    if (profileSnap.exists()) {
-      const data =
-        profileSnap.data();
+    if (!profileSnap.exists()) return;
 
-      displayNameInput.value =
-        data.displayName || "";
+    const data = profileSnap.data();
 
-      bioTextInput.value =
-        data.bio || "";
+    displayNameInput.value = data.displayName || "";
+    bioTextInput.value = data.bio || "";
+    heightInput.value = data.height || "";
+    bodyTypeInput.value = data.bodyType || "";
+    usualSizeInput.value = data.usualSize || "";
+    favoriteStyleInput.value = data.favoriteStyle || "";
+    favoriteColorInput.value = data.favoriteColor || "";
 
-      heightInput.value =
-        data.height || "";
-
-      bodyTypeInput.value =
-        data.bodyType || "";
-
-      usualSizeInput.value =
-        data.usualSize || "";
-
-      favoriteStyleInput.value =
-        data.favoriteStyle || "";
-
-      favoriteColorInput.value =
-        data.favoriteColor || "";
-
-      iconImage =
-        data.iconImage || "";
-
-      if (iconImage && iconPreview) {
-        iconPreview.src = iconImage;
-        iconPreview.style.display = "block";
-      }
+    if (data.iconImage) {
+      iconPreview.src = data.iconImage;
+      iconPreview.style.display = "block";
     }
+
   } catch (error) {
     console.error(error);
   }
 }
 
-saveProfileBtn.addEventListener(
-  "click",
-  saveProfile
-);
+saveProfileBtn.addEventListener("click", saveProfile);
 
 async function saveProfile() {
   if (!currentUser) return;
+
+  const iconImage =
+    iconPreview && iconPreview.src.startsWith("data:image")
+      ? iconPreview.src
+      : "";
 
   try {
     await setDoc(
@@ -183,32 +138,19 @@ async function saveProfile() {
         uid: currentUser.uid,
         email: currentUser.email,
 
-        displayName:
-          displayNameInput.value.trim(),
-
-        bio:
-          bioTextInput.value.trim(),
-
-        height:
-          heightInput.value.trim(),
-
-        bodyType:
-          bodyTypeInput.value.trim(),
-
-        usualSize:
-          usualSizeInput.value.trim(),
-
-        favoriteStyle:
-          favoriteStyleInput.value.trim(),
-
-        favoriteColor:
-          favoriteColorInput.value.trim(),
+        displayName: displayNameInput.value.trim(),
+        bio: bioTextInput.value.trim(),
+        height: heightInput.value.trim(),
+        bodyType: bodyTypeInput.value.trim(),
+        usualSize: usualSizeInput.value.trim(),
+        favoriteStyle: favoriteStyleInput.value.trim(),
+        favoriteColor: favoriteColorInput.value.trim(),
 
         iconImage,
 
-        updatedAt:
-          Date.now()
-      }
+        updatedAt: Date.now()
+      },
+      { merge: true }
     );
 
     alert("プロフィールを保存しました！");
