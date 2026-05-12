@@ -63,14 +63,11 @@ style.textContent = `
 }
 
 .card-user-icon {
-
   width: 100%;
-
   height: 100%;
-
-  object-fit: cover;
-
+  object-fit: contain;
   display: block;
+  background: #ffffff;
 }
 
 .card-user-icon-fallback {
