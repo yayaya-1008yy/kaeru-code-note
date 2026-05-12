@@ -39,8 +39,8 @@ style.textContent = `
 
   .card-user-icon,
   .card-user-icon-fallback {
-    width: 28px;
-    height: 28px;
+    width: 20px;
+    height: 20px;
     border-radius: 999px;
     object-fit: cover;
     flex-shrink: 0;
@@ -50,7 +50,7 @@ style.textContent = `
     align-items: center;
     justify-content: center;
     color: #65c5df;
-    font-size: 14px;
+    font-size: 10px;
     font-weight: 900;
   }
 
