@@ -233,6 +233,19 @@ async function followUser() {
     createdAt: serverTimestamp()
   });
 
+  const notificationId =
+    `${currentUser.uid}_${uid}_${Date.now()}`;
+
+  await setDoc(
+    doc(db, "notifications", notificationId),
+    {
+      type: "follow",
+      fromUserId: currentUser.uid,
+      toUserId: uid,
+      createdAt: serverTimestamp()
+    }
+  );
+
   isFollowing = true;
 
   await loadFollowCounts();
