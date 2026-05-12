@@ -2309,3 +2309,47 @@ input {
   }
 
 }
+
+/* ===== 空っぽ表示 ===== */
+
+.empty-state {
+  grid-column: 1 / -1;
+
+  background:
+    linear-gradient(
+      135deg,
+      #ffffff 0%,
+      #f2fbff 100%
+    );
+
+  border: 1px solid #e3f5fb;
+  border-radius: 34px;
+
+  padding: 42px 24px;
+
+  text-align: center;
+
+  box-shadow:
+    0 18px 50px rgba(100,160,180,0.10);
+}
+
+.empty-icon {
+  font-size: 38px;
+  margin-bottom: 12px;
+}
+
+.empty-state h2 {
+  margin: 0 0 10px;
+
+  font-size: 26px;
+
+  letter-spacing: -1px;
+}
+
+.empty-state p {
+  color: #777;
+
+  line-height: 1.8;
+
+  margin-bottom: 22px;
+}

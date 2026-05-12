@@ -267,13 +267,36 @@ function renderOutfits(keyword = "") {
 
   if (outfits.length === 0) {
     outfitList.innerHTML =
-      `<p class="empty">まだ投稿がありません。</p>`;
+`
+  <div class="empty-state">
+    <div class="empty-icon">🫧</div>
+    <h2>まだ投稿がありません</h2>
+    <p>
+      最初のコーデを投稿して、<br>
+      このコーデ帳を育てていこう。
+    </p>
+    <a class="main-btn" href="upload.html">
+      投稿してみる
+    </a>
+  </div>
+`;
+
     return;
   }
 
   if (filteredOutfits.length === 0) {
     outfitList.innerHTML =
-      `<p class="empty">検索に合う投稿がありません。</p>`;
+`
+  <div class="empty-state">
+    <div class="empty-icon">🔍</div>
+    <h2>見つかりませんでした</h2>
+    <p>
+      キーワードを変えるか、<br>
+      ほかのタグで探してみてね。
+    </p>
+  </div>
+`;
+
     return;
   }
 
