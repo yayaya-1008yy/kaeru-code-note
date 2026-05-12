@@ -9,7 +9,8 @@ import {
   query,
   orderBy,
   doc,
-  getDoc
+  getDoc,
+  where
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
@@ -58,19 +59,96 @@ style.textContent = `
     flex-shrink: 0;
   }
 
+  .mypage-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin: 0 0 24px;
+  }
+
+  .mypage-stats > div {
+    background: #f8fafb;
+    border: 1px solid #e7ecef;
+    border-radius: 18px;
+    padding: 14px 10px;
+    text-align: center;
+  }
+
+  .mypage-stats strong {
+    display: block;
+    font-size: 22px;
+    color: #111;
+    font-weight: 900;
+    line-height: 1.1;
+  }
+
+  .mypage-stats span {
+    display: block;
+    margin-top: 6px;
+    font-size: 11px;
+    color: #777;
+    font-weight: 800;
+    letter-spacing: 1px;
+  }
+
+  .mypage-stats .stat-clickable {
+    cursor: pointer;
+    transition: 0.2s;
+  }
+
+  .mypage-stats .stat-clickable:hover {
+    transform: translateY(-2px);
+    opacity: 0.75;
+  }
+
   @media (max-width: 700px) {
     .mypage-profile-top {
       flex-direction: column;
       align-items: flex-start;
+    }
+
+    .mypage-stats {
+      gap: 8px;
+    }
+
+    .mypage-stats > div {
+      padding: 12px 4px;
+    }
+
+    .mypage-stats strong {
+      font-size: 18px;
+    }
+
+    .mypage-stats span {
+      font-size: 10px;
+      white-space: nowrap;
     }
   }
 `;
 document.head.appendChild(style);
 
 function getProfileIcon(profile) {
-  return (
-profile.iconImage || ""
+  return profile.iconImage || "";
+}
+
+async function getFollowCounts(user) {
+  const followersQuery = query(
+    collection(db, "follows"),
+    where("followingId", "==", user.uid)
   );
+
+  const followingQuery = query(
+    collection(db, "follows"),
+    where("followerId", "==", user.uid)
+  );
+
+  const followersSnap = await getDocs(followersQuery);
+  const followingSnap = await getDocs(followingQuery);
+
+  return {
+    followers: followersSnap.size,
+    following: followingSnap.size
+  };
 }
 
 async function register() {
@@ -127,7 +205,7 @@ function getMainImage(outfit) {
   return "https://placehold.co/600x800?text=NO+IMAGE";
 }
 
-async function loadProfile(user) {
+async function loadProfile(user, postCount = 0) {
   if (!profileSummary) return;
 
   profileSummary.innerHTML = `
@@ -139,11 +217,33 @@ async function loadProfile(user) {
   try {
     const profileRef = doc(db, "profiles", user.uid);
     const profileSnap = await getDoc(profileRef);
+    const followCounts = await getFollowCounts(user);
 
     if (!profileSnap.exists()) {
       profileSummary.innerHTML = `
         <div class="form-box" style="margin-bottom:20px;">
           <h2 style="margin-top:0;">プロフィール未設定</h2>
+
+          <div class="mypage-stats">
+            <div>
+              <strong>${postCount}</strong>
+              <span>POSTS</span>
+            </div>
+
+            <div
+              class="stat-clickable"
+              onclick="location.href='following.html?uid=${user.uid}'"
+            >
+              <strong>${followCounts.following}</strong>
+              <span>FOLLOW</span>
+            </div>
+
+            <div>
+              <strong>${followCounts.followers}</strong>
+              <span>FOLLOWERS</span>
+            </div>
+          </div>
+
           <p style="color:#666; line-height:1.7;">
             プロフィール編集から設定できます。
           </p>
@@ -196,6 +296,26 @@ async function loadProfile(user) {
         <p style="color:#666; line-height:1.8; margin-bottom:24px;">
           ${profile.bio || "自己紹介はまだありません。"}
         </p>
+
+        <div class="mypage-stats">
+          <div>
+            <strong>${postCount}</strong>
+            <span>POSTS</span>
+          </div>
+
+          <div
+            class="stat-clickable"
+            onclick="location.href='following.html?uid=${user.uid}'"
+          >
+            <strong>${followCounts.following}</strong>
+            <span>FOLLOW</span>
+          </div>
+
+          <div>
+            <strong>${followCounts.followers}</strong>
+            <span>FOLLOWERS</span>
+          </div>
+        </div>
 
         <div class="profile-info-list">
           ${profile.height ? `
@@ -271,7 +391,7 @@ async function loadMyOutfits(user) {
     if (myOutfits.length === 0) {
       outfitList.innerHTML =
         `<p class="empty">まだ自分の投稿がありません。</p>`;
-      return;
+      return 0;
     }
 
     outfitList.innerHTML = "";
@@ -339,14 +459,18 @@ async function loadMyOutfits(user) {
 
       outfitList.appendChild(card);
     });
+
+    return myOutfits.length;
+
   } catch (error) {
     console.error(error);
     outfitList.innerHTML =
       `<p class="empty">自分の投稿を読み込めませんでした。</p>`;
+    return 0;
   }
 }
 
-onAuthStateChanged(auth, user => {
+onAuthStateChanged(auth, async user => {
   if (user) {
     authBox.style.display = "none";
     myPageArea.style.display = "block";
@@ -355,8 +479,9 @@ onAuthStateChanged(auth, user => {
       loginUserEmail.textContent = user.email;
     }
 
-    loadProfile(user);
-    loadMyOutfits(user);
+    const postCount = await loadMyOutfits(user);
+    await loadProfile(user, postCount);
+
   } else {
     authBox.style.display = "block";
     myPageArea.style.display = "none";
