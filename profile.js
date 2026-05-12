@@ -47,7 +47,7 @@ function compressIcon(file) {
       const img = new Image();
 
       img.onload = () => {
-        const size = 180;
+        const size = 220;
 
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
@@ -55,23 +55,29 @@ function compressIcon(file) {
         canvas.width = size;
         canvas.height = size;
 
-        const minSide = Math.min(img.width, img.height);
-        const sx = (img.width - minSide) / 2;
-        const sy = (img.height - minSide) / 2;
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, size, size);
+
+        const scale = Math.min(
+          size / img.width,
+          size / img.height
+        );
+
+        const drawWidth = img.width * scale;
+        const drawHeight = img.height * scale;
+
+        const dx = (size - drawWidth) / 2;
+        const dy = (size - drawHeight) / 2;
 
         ctx.drawImage(
           img,
-          sx,
-          sy,
-          minSide,
-          minSide,
-          0,
-          0,
-          size,
-          size
+          dx,
+          dy,
+          drawWidth,
+          drawHeight
         );
 
-        resolve(canvas.toDataURL("image/jpeg", 0.6));
+        resolve(canvas.toDataURL("image/jpeg", 0.75));
       };
 
       img.src = e.target.result;
@@ -81,15 +87,17 @@ function compressIcon(file) {
   });
 }
 
-iconInput.addEventListener("change", async () => {
-  if (!iconInput.files || !iconInput.files[0]) return;
+if (iconInput) {
+  iconInput.addEventListener("change", async () => {
+    if (!iconInput.files || !iconInput.files[0]) return;
 
-  const compressedIcon =
-    await compressIcon(iconInput.files[0]);
+    const compressedIcon =
+      await compressIcon(iconInput.files[0]);
 
-  iconPreview.src = compressedIcon;
-  iconPreview.style.display = "block";
-});
+    iconPreview.src = compressedIcon;
+    iconPreview.style.display = "block";
+  });
+}
 
 async function loadProfile() {
   try {
