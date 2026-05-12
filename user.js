@@ -115,7 +115,7 @@ async function loadProfile() {
               : ""
           }
 
-          <div class="user-stats">
+          <div class="user-stats main-stats">
 
             <div>
               <strong>${userOutfits.length}</strong>
@@ -132,17 +132,21 @@ async function loadProfile() {
               <span>FOLLOWERS</span>
             </div>
 
+          </div>
+
+          <div class="user-size-info">
+
             ${profile.height ? `
               <div>
-                <strong>${profile.height}</strong>
                 <span>HEIGHT</span>
+                <strong>${profile.height}</strong>
               </div>
             ` : ""}
 
             ${profile.usualSize ? `
               <div>
-                <strong>${profile.usualSize}</strong>
                 <span>SIZE</span>
+                <strong>${profile.usualSize}</strong>
               </div>
             ` : ""}
 

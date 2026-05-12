@@ -2378,3 +2378,31 @@ input {
 #followBtn:hover {
   opacity: 0.85;
 }
+
+.main-stats {
+  margin-top: 22px;
+}
+
+.user-size-info {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.user-size-info div {
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #f5f7f8;
+  font-size: 12px;
+}
+
+.user-size-info span {
+  margin-right: 6px;
+  color: #777;
+  font-weight: 600;
+}
+
+.user-size-info strong {
+  color: #111;
+}
