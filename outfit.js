@@ -16,7 +16,9 @@ import {
   doc,
   updateDoc,
   increment,
-  getDoc
+  getDoc,
+  setDoc,
+  serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 let outfits = [];
@@ -101,16 +103,69 @@ function isFavorite(id) {
   return favoriteOutfits.includes(id);
 }
 
-function toggleFavorite(id) {
-  if (isFavorite(id)) {
-    favoriteOutfits =
-      favoriteOutfits.filter(item => item !== id);
-  } else {
-    favoriteOutfits.push(id);
-  }
+async function toggleFavorite(id) {
+  const outfit =
+    outfits.find(item => item.id === id);
 
-  saveFavorites();
-  renderDetail();
+  if (!outfit) return;
+
+  const outfitRef =
+    doc(db, "outfits", outfit.firebaseId);
+
+  try {
+    if (isFavorite(id)) {
+      favoriteOutfits =
+        favoriteOutfits.filter(item => item !== id);
+
+      await updateDoc(outfitRef, {
+        favoriteCount: increment(-1)
+      });
+
+      outfit.favoriteCount =
+        Math.max((outfit.favoriteCount || 1) - 1, 0);
+
+    } else {
+      favoriteOutfits.push(id);
+
+      await updateDoc(outfitRef, {
+        favoriteCount: increment(1)
+      });
+
+      outfit.favoriteCount =
+        (outfit.favoriteCount || 0) + 1;
+
+      const ownerUid =
+        outfit.userId || outfit.ownerId;
+
+      if (
+        currentUser &&
+        ownerUid &&
+        currentUser.uid !== ownerUid
+      ) {
+        const notificationId =
+          `favorite_${currentUser.uid}_${outfit.id}_${Date.now()}`;
+
+        await setDoc(
+          doc(db, "notifications", notificationId),
+          {
+            type: "favorite",
+            fromUserId: currentUser.uid,
+            toUserId: ownerUid,
+            outfitId: outfit.id,
+            outfitTitle: outfit.title || "無題のコーデ",
+            createdAt: serverTimestamp()
+          }
+        );
+      }
+    }
+
+    saveFavorites();
+    renderDetail();
+
+  } catch (error) {
+    console.error(error);
+    alert("お気に入り更新に失敗しました");
+  }
 }
 
 function changeMainImage(index) {
