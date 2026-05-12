@@ -5,7 +5,6 @@ import {
   getDocs,
   query,
   where,
-  orderBy,
   doc,
   getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -30,8 +29,7 @@ onAuthStateChanged(auth, async user => {
 async function loadNotifications(user) {
   const q = query(
     collection(db, "notifications"),
-    where("toUserId", "==", user.uid),
-    orderBy("createdAt", "desc")
+    where("toUserId", "==", user.uid)
   );
 
   const snap = await getDocs(q);
@@ -42,11 +40,21 @@ async function loadNotifications(user) {
     return;
   }
 
+  const notifications =
+    snap.docs
+      .map(docItem => docItem.data())
+      .sort((a, b) => {
+        const aTime =
+          a.createdAt?.seconds || 0;
+        const bTime =
+          b.createdAt?.seconds || 0;
+
+        return bTime - aTime;
+      });
+
   notificationList.innerHTML = "";
 
-  for (const notificationDoc of snap.docs) {
-    const data = notificationDoc.data();
-
+  for (const data of notifications) {
     let fromName = "誰か";
 
     if (data.fromUserId) {
