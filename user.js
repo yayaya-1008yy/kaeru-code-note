@@ -73,9 +73,12 @@ async function loadProfile() {
     userProfileArea.innerHTML = `
       <section class="user-hero-card">
 
-        <div class="user-avatar">
-          ${firstLetter}
-        </div>
+<div
+  class="user-avatar"
+  style="${profile.iconImage ? `background-image:url('${profile.iconImage}');` : ""}"
+>
+  ${profile.iconImage ? "" : firstLetter}
+</div>
 
         <div class="user-hero-main">
 
