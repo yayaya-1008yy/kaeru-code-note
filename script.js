@@ -63,10 +63,17 @@ style.textContent = `
 }
 
 .card-user-icon {
+
   width: 100%;
+
   height: 100%;
-  object-fit: cover;
+
+  object-fit: contain;
+
   object-position: center;
+
+  background: #ffffff;
+
   display: block;
 }
 
