@@ -98,7 +98,7 @@ function compressIcon(file) {
         );
 
         const result =
-          canvas.toDataURL("image/jpeg", 0.18);
+canvas.toDataURL("image/webp", 0.18);
 
         resolve(result);
       };
