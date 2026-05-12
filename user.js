@@ -16,38 +16,20 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
-const params =
-  new URLSearchParams(window.location.search);
+const params = new URLSearchParams(window.location.search);
+const uid = params.get("uid");
 
-const uid =
-  params.get("uid");
-
-const userProfileArea =
-  document.getElementById("userProfileArea");
-
-const userOutfitList =
-  document.getElementById("userOutfitList");
-
-const followBtn =
-  document.getElementById("followBtn");
+const userProfileArea = document.getElementById("userProfileArea");
+const userOutfitList = document.getElementById("userOutfitList");
 
 let userOutfits = [];
 let currentUser = null;
 let isFollowing = false;
 
 function getMainImage(outfit) {
-  if (outfit.images && outfit.images.length > 0) {
-    return outfit.images[0];
-  }
-
-  if (outfit.image) {
-    return outfit.image;
-  }
-
-  if (outfit.imageUrl) {
-    return outfit.imageUrl;
-  }
-
+  if (outfit.images?.length > 0) return outfit.images[0];
+  if (outfit.image) return outfit.image;
+  if (outfit.imageUrl) return outfit.imageUrl;
   return "https://placehold.co/600x800?text=NO+IMAGE";
 }
 
@@ -55,38 +37,29 @@ async function loadUserPage() {
   if (!uid) {
     userProfileArea.innerHTML =
       `<p class="empty">ユーザーが見つかりません。</p>`;
-
-    if (followBtn) {
-      followBtn.style.display = "none";
-    }
-
     return;
   }
 
-  await loadUserOutfits();
-  await loadProfile();
-  setupFollowButton();
+  onAuthStateChanged(auth, async user => {
+    currentUser = user;
+    await loadUserOutfits();
+    await checkFollowing();
+    await loadProfile();
+  });
 }
 
 async function loadProfile() {
   try {
-    const profileRef =
-      doc(db, "profiles", uid);
-
-    const profileSnap =
-      await getDoc(profileRef);
+    const profileRef = doc(db, "profiles", uid);
+    const profileSnap = await getDoc(profileRef);
 
     let profile = {};
-
     if (profileSnap.exists()) {
       profile = profileSnap.data();
     }
 
-    const name =
-      profile.displayName || "NO NAME";
-
-    const firstLetter =
-      name.slice(0, 1);
+    const name = profile.displayName || "NO NAME";
+    const firstLetter = name.slice(0, 1);
 
     userProfileArea.innerHTML = `
       <section class="user-hero-card">
@@ -100,17 +73,23 @@ async function loadProfile() {
 
         <div class="user-hero-main">
 
-          <p class="eyebrow">
-            USER PROFILE
-          </p>
+          <p class="eyebrow">USER PROFILE</p>
 
-          <h1>
-            ${name}
-          </h1>
+          <h1>${name}</h1>
 
           <p class="user-bio">
             ${profile.bio || "自己紹介はまだありません。"}
           </p>
+
+          ${
+            currentUser && currentUser.uid !== uid
+              ? `
+            <button id="followBtn" class="follow-btn ${isFollowing ? "following" : ""}">
+              ${isFollowing ? "フォロー中" : "フォロー"}
+            </button>
+          `
+              : ""
+          }
 
           <div class="user-stats">
 
@@ -170,12 +149,64 @@ async function loadProfile() {
       </div>
     `;
 
+    setupFollowButton();
+
   } catch (error) {
     console.error(error);
-
     userProfileArea.innerHTML =
       `<p class="empty">プロフィールを読み込めませんでした。</p>`;
   }
+}
+
+function setupFollowButton() {
+  const followBtn = document.getElementById("followBtn");
+
+  if (!followBtn) return;
+
+  followBtn.onclick = async () => {
+    if (isFollowing) {
+      await unfollowUser();
+    } else {
+      await followUser();
+    }
+  };
+}
+
+async function checkFollowing() {
+  if (!currentUser || currentUser.uid === uid) {
+    isFollowing = false;
+    return;
+  }
+
+  const followId = `${currentUser.uid}_${uid}`;
+  const followRef = doc(db, "follows", followId);
+  const followSnap = await getDoc(followRef);
+
+  isFollowing = followSnap.exists();
+}
+
+async function followUser() {
+  const followId = `${currentUser.uid}_${uid}`;
+  const followRef = doc(db, "follows", followId);
+
+  await setDoc(followRef, {
+    followerId: currentUser.uid,
+    followingId: uid,
+    createdAt: serverTimestamp()
+  });
+
+  isFollowing = true;
+  await loadProfile();
+}
+
+async function unfollowUser() {
+  const followId = `${currentUser.uid}_${uid}`;
+  const followRef = doc(db, "follows", followId);
+
+  await deleteDoc(followRef);
+
+  isFollowing = false;
+  await loadProfile();
 }
 
 async function loadUserOutfits() {
@@ -183,25 +214,22 @@ async function loadUserOutfits() {
     `<p class="empty">投稿を読み込み中...</p>`;
 
   try {
-    const q =
-      query(
-        collection(db, "outfits"),
-        orderBy("createdAt", "desc")
+    const q = query(
+      collection(db, "outfits"),
+      orderBy("createdAt", "desc")
+    );
+
+    const snapshot = await getDocs(q);
+
+    userOutfits = snapshot.docs
+      .map(docItem => ({
+        firebaseId: docItem.id,
+        ...docItem.data()
+      }))
+      .filter(outfit =>
+        outfit.ownerId === uid ||
+        outfit.userId === uid
       );
-
-    const snapshot =
-      await getDocs(q);
-
-    userOutfits =
-      snapshot.docs
-        .map(docItem => ({
-          firebaseId: docItem.id,
-          ...docItem.data()
-        }))
-        .filter(outfit =>
-          outfit.ownerId === uid ||
-          outfit.userId === uid
-        );
 
     if (userOutfits.length === 0) {
       userOutfitList.innerHTML =
@@ -212,33 +240,19 @@ async function loadUserOutfits() {
     userOutfitList.innerHTML = "";
 
     userOutfits.forEach(outfit => {
-      const card =
-        document.createElement("article");
+      const card = document.createElement("article");
+      card.className = "post-card";
 
-      card.className =
-        "post-card";
+      const imageCount = outfit.images?.length || 1;
+      const tagHtml = outfit.tags?.length
+        ? outfit.tags.map(tag => `<span class="tag">#${tag}</span>`).join("")
+        : "";
 
-      const imageCount =
-        outfit.images && outfit.images.length
-          ? outfit.images.length
-          : 1;
-
-      const tagHtml =
-        outfit.tags && outfit.tags.length
-          ? outfit.tags.map(tag =>
-              `<span class="tag">#${tag}</span>`
-            ).join("")
-          : "";
-
-      const outfitId =
-        outfit.firebaseId || outfit.id;
+      const outfitId = outfit.firebaseId || outfit.id;
 
       card.innerHTML = `
         <div class="card-image-wrap">
-          <img
-            src="${getMainImage(outfit)}"
-            alt="${outfit.title || "コーデ画像"}"
-          >
+          <img src="${getMainImage(outfit)}" alt="${outfit.title || "コーデ画像"}">
 
           <div class="image-count-badge">
             📷 ${imageCount}
@@ -255,7 +269,6 @@ async function loadUserOutfits() {
           <p class="card-info">
             👀 ${outfit.viewCount || 0}
             ／ ♥ ${outfit.favoriteCount || 0}
-            ／ 📷 ${imageCount}
           </p>
 
           <button
@@ -272,105 +285,9 @@ async function loadUserOutfits() {
 
   } catch (error) {
     console.error(error);
-
     userOutfitList.innerHTML =
       `<p class="empty">投稿を読み込めませんでした。</p>`;
   }
-}
-
-function setupFollowButton() {
-  if (!followBtn) {
-    return;
-  }
-
-  onAuthStateChanged(auth, async user => {
-    currentUser = user;
-
-    if (!currentUser) {
-      followBtn.textContent = "ログインしてフォロー";
-      followBtn.onclick = () => {
-        location.href = "login.html";
-      };
-      return;
-    }
-
-    if (currentUser.uid === uid) {
-      followBtn.style.display = "none";
-      return;
-    }
-
-    followBtn.style.display = "inline-block";
-
-    await checkFollowing();
-
-    followBtn.onclick = async () => {
-      if (isFollowing) {
-        await unfollowUser();
-      } else {
-        await followUser();
-      }
-    };
-  });
-}
-
-async function checkFollowing() {
-  const followId =
-    `${currentUser.uid}_${uid}`;
-
-  const followRef =
-    doc(db, "follows", followId);
-
-  const followSnap =
-    await getDoc(followRef);
-
-  isFollowing =
-    followSnap.exists();
-
-  updateFollowButton();
-}
-
-function updateFollowButton() {
-  if (!followBtn) {
-    return;
-  }
-
-  if (isFollowing) {
-    followBtn.textContent = "フォロー中";
-    followBtn.classList.add("following");
-  } else {
-    followBtn.textContent = "フォロー";
-    followBtn.classList.remove("following");
-  }
-}
-
-async function followUser() {
-  const followId =
-    `${currentUser.uid}_${uid}`;
-
-  const followRef =
-    doc(db, "follows", followId);
-
-  await setDoc(followRef, {
-    followerId: currentUser.uid,
-    followingId: uid,
-    createdAt: serverTimestamp()
-  });
-
-  isFollowing = true;
-  updateFollowButton();
-}
-
-async function unfollowUser() {
-  const followId =
-    `${currentUser.uid}_${uid}`;
-
-  const followRef =
-    doc(db, "follows", followId);
-
-  await deleteDoc(followRef);
-
-  isFollowing = false;
-  updateFollowButton();
 }
 
 loadUserPage();
