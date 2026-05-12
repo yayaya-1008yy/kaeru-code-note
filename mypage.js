@@ -10,14 +10,18 @@ import {
   orderBy,
   doc,
   getDoc,
-  where
+  where,
+  deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged,
-  signOut
+  signOut,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  deleteUser
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const authBox = document.getElementById("authBox");
@@ -31,6 +35,9 @@ const loginBtn = document.getElementById("loginBtn");
 const registerBtn = document.getElementById("registerBtn");
 const logoutBtn = document.getElementById("logoutBtn");
 const loginUserEmail = document.getElementById("loginUserEmail");
+
+const deletePassword = document.getElementById("deletePassword");
+const deleteAccountBtn = document.getElementById("deleteAccountBtn");
 
 const style = document.createElement("style");
 style.textContent = `
@@ -470,6 +477,108 @@ async function loadMyOutfits(user) {
   }
 }
 
+async function deleteAccount() {
+  const user = auth.currentUser;
+
+  if (!user) {
+    alert("ログインしてください");
+    return;
+  }
+
+  const password = deletePassword.value.trim();
+
+  if (!password) {
+    alert("退会するにはパスワードを入力してください");
+    return;
+  }
+
+  const confirmText =
+    "本当に退会しますか？\nアカウント、プロフィール、投稿、フォロー情報はすべて削除されます。";
+
+  if (!confirm(confirmText)) {
+    return;
+  }
+
+  try {
+    deleteAccountBtn.disabled = true;
+    deleteAccountBtn.textContent = "削除中...";
+
+    const credential =
+      EmailAuthProvider.credential(user.email, password);
+
+    await reauthenticateWithCredential(user, credential);
+
+    const outfitsQuery = query(
+      collection(db, "outfits"),
+      where("ownerId", "==", user.uid)
+    );
+
+    const outfitsSnap = await getDocs(outfitsQuery);
+
+    for (const outfitDoc of outfitsSnap.docs) {
+      await deleteDoc(doc(db, "outfits", outfitDoc.id));
+    }
+
+    const outfitsUserQuery = query(
+      collection(db, "outfits"),
+      where("userId", "==", user.uid)
+    );
+
+    const outfitsUserSnap = await getDocs(outfitsUserQuery);
+
+    for (const outfitDoc of outfitsUserSnap.docs) {
+      await deleteDoc(doc(db, "outfits", outfitDoc.id));
+    }
+
+    const followingQuery = query(
+      collection(db, "follows"),
+      where("followerId", "==", user.uid)
+    );
+
+    const followingSnap = await getDocs(followingQuery);
+
+    for (const followDoc of followingSnap.docs) {
+      await deleteDoc(doc(db, "follows", followDoc.id));
+    }
+
+    const followersQuery = query(
+      collection(db, "follows"),
+      where("followingId", "==", user.uid)
+    );
+
+    const followersSnap = await getDocs(followersQuery);
+
+    for (const followDoc of followersSnap.docs) {
+      await deleteDoc(doc(db, "follows", followDoc.id));
+    }
+
+    await deleteDoc(doc(db, "profiles", user.uid));
+
+    await deleteUser(user);
+
+    alert("退会しました。");
+    location.href = "index.html";
+
+  } catch (error) {
+    console.error(error);
+
+    deleteAccountBtn.disabled = false;
+    deleteAccountBtn.textContent = "退会する";
+
+    if (error.code === "auth/wrong-password") {
+      alert("パスワードが違います。");
+      return;
+    }
+
+    if (error.code === "auth/requires-recent-login") {
+      alert("安全のため、もう一度ログインしてから退会してください。");
+      return;
+    }
+
+    alert("退会処理に失敗しました。Firestoreルールも確認してください。");
+  }
+}
+
 onAuthStateChanged(auth, async user => {
   if (user) {
     authBox.style.display = "none";
@@ -495,3 +604,7 @@ onAuthStateChanged(auth, async user => {
 registerBtn.addEventListener("click", register);
 loginBtn.addEventListener("click", login);
 logoutBtn.addEventListener("click", logout);
+
+if (deleteAccountBtn) {
+  deleteAccountBtn.addEventListener("click", deleteAccount);
+}
