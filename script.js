@@ -196,7 +196,7 @@ async function loadOutfits() {
 
     for (const outfit of outfits) {
 const uid =
-  outfit.ownerId || outfit.userId;
+  outfit.userId || outfit.ownerId;
 
       const profile =
         await getUserProfile(uid);
@@ -358,7 +358,9 @@ const ownerUid =
   outfit.ownerId || outfit.userId;
 
       if (isHomeFeed) {
-        return followingIds.includes(ownerUid);
+return followingIds.includes(ownerUid) ||
+       followingIds.includes(outfit.userId) ||
+       followingIds.includes(outfit.ownerId);
       }
 
       return true;
@@ -453,7 +455,7 @@ const ownerUid =
     card.className = "post-card";
 
 const uid =
-  outfit.ownerId || outfit.userId;
+  outfit.userId || outfit.ownerId;
 
     const imageCount =
       outfit.images && outfit.images.length
