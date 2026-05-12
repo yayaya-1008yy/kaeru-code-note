@@ -25,31 +25,67 @@ let currentUser = null;
 let favoriteOutfits =
   JSON.parse(localStorage.getItem("favoriteOutfits")) || [];
 
-const params =
-  new URLSearchParams(window.location.search);
-
-const outfitId =
-  Number(params.get("id"));
-
-const detailArea =
-  document.getElementById("detailArea");
+const params = new URLSearchParams(window.location.search);
+const outfitId = Number(params.get("id"));
+const detailArea = document.getElementById("detailArea");
 
 let currentImageIndex = 0;
 let touchStartX = 0;
 let touchEndX = 0;
 
+const style = document.createElement("style");
+
+style.textContent = `
+.post-user-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 16px;
+}
+
+.detail-user-mini {
+  width: 30px;
+  height: 30px;
+  min-width: 30px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #ffffff;
+  border: 1px solid #d9eef5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.detail-user-icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 999px;
+  display: block;
+  background: #ffffff;
+}
+
+.detail-user-icon-fallback {
+  font-size: 11px;
+  color: #74cde6;
+  font-weight: 900;
+}
+
+.detail-user-name {
+  color: #74cde6;
+  font-size: 13px;
+  font-weight: 900;
+  text-decoration: none;
+}
+`;
+
+document.head.appendChild(style);
+
 function getImages(outfit) {
-  if (outfit.images && outfit.images.length > 0) {
-    return outfit.images;
-  }
-
-  if (outfit.image) {
-    return [outfit.image];
-  }
-
-  if (outfit.imageUrl) {
-    return [outfit.imageUrl];
-  }
+  if (outfit.images && outfit.images.length > 0) return outfit.images;
+  if (outfit.image) return [outfit.image];
+  if (outfit.imageUrl) return [outfit.imageUrl];
 
   return ["https://placehold.co/600x800?text=NO+IMAGE"];
 }
@@ -89,15 +125,11 @@ function copyCode(code) {
 
 function reportOutfit(title) {
   const reason =
-    prompt(
-      `「${title}」を通報します。\n理由を入力してください。`
-    );
+    prompt(`「${title}」を通報します。\n理由を入力してください。`);
 
   if (!reason) return;
 
-  alert(
-    "通報を受け付けました。\nご協力ありがとうございます。"
-  );
+  alert("通報を受け付けました。\nご協力ありがとうございます。");
 
   console.log("通報内容:", {
     title,
@@ -111,8 +143,7 @@ function swipeImage(direction) {
 
   if (!outfit) return;
 
-  const images =
-    getImages(outfit);
+  const images = getImages(outfit);
 
   if (images.length <= 1) return;
 
@@ -166,6 +197,55 @@ async function loadOutfit() {
       ...docItem.data()
     }));
 
+  for (const outfit of outfits) {
+    const uid =
+      outfit.userId || outfit.ownerId;
+
+    if (!uid) continue;
+
+    try {
+      const profileRef =
+        doc(db, "profiles", uid);
+
+      const profileSnap =
+        await getDoc(profileRef);
+
+      if (!profileSnap.exists()) continue;
+
+      const profile =
+        profileSnap.data();
+
+      outfit.profileIcon =
+        profile.iconImage || "";
+
+      outfit.profileName =
+        profile.displayName ||
+        outfit.userName ||
+        "NO NAME";
+
+      outfit.profileBio =
+        profile.bio || "";
+
+      outfit.profileHeight =
+        profile.height || "";
+
+      outfit.profileBodyType =
+        profile.bodyType || "";
+
+      outfit.profileUsualSize =
+        profile.usualSize || "";
+
+      outfit.profileFavoriteStyle =
+        profile.favoriteStyle || "";
+
+      outfit.profileFavoriteColor =
+        profile.favoriteColor || "";
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   renderDetail();
 }
 
@@ -175,90 +255,65 @@ async function loadProfileMini(outfit) {
 
   if (!profileArea) return;
 
-  const userId =
-    outfit.ownerId || outfit.userId;
+  const displayName =
+    outfit.profileName || outfit.userName || "NO NAME";
 
-  if (!userId) {
-    profileArea.innerHTML = "";
-    return;
-  }
+  profileArea.innerHTML = `
+    <div class="profile-mini-card">
 
-  try {
-    const profileRef =
-      doc(db, "profiles", userId);
+      <p class="profile-mini-label">
+        POSTED BY
+      </p>
 
-    const profileSnap =
-      await getDoc(profileRef);
+      <h2>
+        ${displayName}
+      </h2>
 
-    if (!profileSnap.exists()) {
-      profileArea.innerHTML = "";
-      return;
-    }
+      <p class="profile-mini-bio">
+        ${outfit.profileBio || ""}
+      </p>
 
-    const profile =
-      profileSnap.data();
+      <div class="profile-mini-info">
 
-    profileArea.innerHTML = `
-      <div class="profile-mini-card">
+        ${outfit.profileHeight ? `
+          <div>
+            <span>身長</span>
+            <strong>${outfit.profileHeight}</strong>
+          </div>
+        ` : ""}
 
-        <p class="profile-mini-label">
-          POSTED BY
-        </p>
+        ${outfit.profileBodyType ? `
+          <div>
+            <span>体型・サイズ感</span>
+            <strong>${outfit.profileBodyType}</strong>
+          </div>
+        ` : ""}
 
-        <h2>
-          ${profile.displayName || "NO NAME"}
-        </h2>
+        ${outfit.profileUsualSize ? `
+          <div>
+            <span>よく買うサイズ</span>
+            <strong>${outfit.profileUsualSize}</strong>
+          </div>
+        ` : ""}
 
-        <p class="profile-mini-bio">
-          ${profile.bio || ""}
-        </p>
+        ${outfit.profileFavoriteStyle ? `
+          <div>
+            <span>好きな系統</span>
+            <strong>${outfit.profileFavoriteStyle}</strong>
+          </div>
+        ` : ""}
 
-        <div class="profile-mini-info">
-
-          ${profile.height ? `
-            <div>
-              <span>身長</span>
-              <strong>${profile.height}</strong>
-            </div>
-          ` : ""}
-
-          ${profile.bodyType ? `
-            <div>
-              <span>体型・サイズ感</span>
-              <strong>${profile.bodyType}</strong>
-            </div>
-          ` : ""}
-
-          ${profile.usualSize ? `
-            <div>
-              <span>よく買うサイズ</span>
-              <strong>${profile.usualSize}</strong>
-            </div>
-          ` : ""}
-
-          ${profile.favoriteStyle ? `
-            <div>
-              <span>好きな系統</span>
-              <strong>${profile.favoriteStyle}</strong>
-            </div>
-          ` : ""}
-
-          ${profile.favoriteColor ? `
-            <div>
-              <span>好きな色</span>
-              <strong>${profile.favoriteColor}</strong>
-            </div>
-          ` : ""}
-
-        </div>
+        ${outfit.profileFavoriteColor ? `
+          <div>
+            <span>好きな色</span>
+            <strong>${outfit.profileFavoriteColor}</strong>
+          </div>
+        ` : ""}
 
       </div>
-    `;
 
-  } catch (error) {
-    console.error(error);
-    profileArea.innerHTML = "";
-  }
+    </div>
+  `;
 }
 
 function renderDetail() {
@@ -296,8 +351,7 @@ function renderDetail() {
       (outfit.viewCount || 0) + 1;
   }
 
-  const images =
-    getImages(outfit);
+  const images = getImages(outfit);
 
   if (currentImageIndex >= images.length) {
     currentImageIndex = 0;
@@ -306,7 +360,7 @@ function renderDetail() {
   const thumbnailHtml =
     images.map((image, index) => `
       <img
-        class="thumbnail-image ${index === currentImageIndex ? 'active' : ''}"
+        class="thumbnail-image ${index === currentImageIndex ? "active" : ""}"
         src="${image}"
         alt="サブ画像${index + 1}"
         onclick="changeMainImage(${index})"
@@ -384,12 +438,12 @@ function renderDetail() {
       </h1>
 
       <button
-        class="favorite-btn detail-favorite-btn ${isFavorite(outfit.id) ? 'active' : ''}"
+        class="favorite-btn detail-favorite-btn ${isFavorite(outfit.id) ? "active" : ""}"
         onclick="toggleFavorite(${outfit.id})"
       >
         ${isFavorite(outfit.id)
-          ? '♥ 保存済み'
-          : '♡ お気に入り'}
+          ? "♥ 保存済み"
+          : "♡ お気に入り"}
       </button>
 
       ${isOwner ? `
@@ -410,11 +464,36 @@ function renderDetail() {
 
     </div>
 
-<div class="post-user-link">
-  <a href="user.html?uid=${outfit.userId || outfit.ownerId}">
-    ${outfit.userName || "ユーザーページを見る"}
-  </a>
-</div>
+    <div class="post-user-link">
+
+      <div class="detail-user-mini">
+
+        ${
+          outfit.profileIcon
+            ? `
+              <img
+                class="detail-user-icon"
+                src="${outfit.profileIcon}"
+                alt=""
+              >
+            `
+            : `
+              <div class="detail-user-icon-fallback">
+                ☻
+              </div>
+            `
+        }
+
+      </div>
+
+      <a
+        class="detail-user-name"
+        href="user.html?uid=${outfit.userId || outfit.ownerId}"
+      >
+        ${outfit.profileName || outfit.userName || "NO NAME"}
+      </a>
+
+    </div>
 
     <p class="post-date">
       投稿日：${outfit.date || "投稿日なし"}
@@ -468,34 +547,20 @@ function renderDetail() {
   }
 }
 
-window.toggleFavorite =
-  toggleFavorite;
-
-window.changeMainImage =
-  changeMainImage;
-
-window.deleteOutfit =
-  deleteOutfit;
-
-window.copyCode =
-  copyCode;
-
-window.reportOutfit =
-  reportOutfit;
+window.toggleFavorite = toggleFavorite;
+window.changeMainImage = changeMainImage;
+window.deleteOutfit = deleteOutfit;
+window.copyCode = copyCode;
+window.reportOutfit = reportOutfit;
 
 onAuthStateChanged(auth, user => {
   currentUser = user;
   loadOutfit();
 });
 
-const imageModal =
-  document.getElementById("imageModal");
-
-const modalImage =
-  document.getElementById("modalImage");
-
-const modalClose =
-  document.getElementById("modalClose");
+const imageModal = document.getElementById("imageModal");
+const modalImage = document.getElementById("modalImage");
+const modalClose = document.getElementById("modalClose");
 
 let modalImageIndex = 0;
 let modalTouchStartX = 0;
@@ -507,8 +572,7 @@ function openImageModal(index) {
 
   if (!outfit) return;
 
-  const images =
-    getImages(outfit);
+  const images = getImages(outfit);
 
   modalImageIndex = index;
 
@@ -524,8 +588,7 @@ function changeModalImage(direction) {
 
   if (!outfit) return;
 
-  const images =
-    getImages(outfit);
+  const images = getImages(outfit);
 
   if (images.length <= 1) return;
 
@@ -547,7 +610,7 @@ function changeModalImage(direction) {
     images[modalImageIndex];
 }
 
-document.addEventListener("click", (e) => {
+document.addEventListener("click", e => {
   const mainImage =
     e.target.closest(".detail-image");
 
@@ -575,46 +638,53 @@ document.addEventListener("click", (e) => {
   }
 });
 
-modalImage.addEventListener("touchstart", e => {
-  modalTouchStartX =
-    e.changedTouches[0].screenX;
-});
+if (modalImage) {
+  modalImage.addEventListener("touchstart", e => {
+    modalTouchStartX =
+      e.changedTouches[0].screenX;
+  });
 
-modalImage.addEventListener("touchend", e => {
-  modalTouchEndX =
-    e.changedTouches[0].screenX;
+  modalImage.addEventListener("touchend", e => {
+    modalTouchEndX =
+      e.changedTouches[0].screenX;
 
-  if (modalTouchStartX - modalTouchEndX > 50) {
-    changeModalImage("next");
-  }
+    if (modalTouchStartX - modalTouchEndX > 50) {
+      changeModalImage("next");
+    }
 
-  if (modalTouchEndX - modalTouchStartX > 50) {
-    changeModalImage("prev");
-  }
-});
+    if (modalTouchEndX - modalTouchStartX > 50) {
+      changeModalImage("prev");
+    }
+  });
+}
 
-modalClose.addEventListener("click", () => {
-  imageModal.classList.remove("active");
-});
-
-imageModal.addEventListener("click", (e) => {
-  if (e.target === imageModal) {
+if (modalClose) {
+  modalClose.addEventListener("click", () => {
     imageModal.classList.remove("active");
-  }
-});
+  });
+}
 
-const modalPrev =
-  document.getElementById("modalPrev");
+if (imageModal) {
+  imageModal.addEventListener("click", e => {
+    if (e.target === imageModal) {
+      imageModal.classList.remove("active");
+    }
+  });
+}
 
-const modalNext =
-  document.getElementById("modalNext");
+const modalPrev = document.getElementById("modalPrev");
+const modalNext = document.getElementById("modalNext");
 
-modalPrev.addEventListener("click", (e) => {
-  e.stopPropagation();
-  changeModalImage("prev");
-});
+if (modalPrev) {
+  modalPrev.addEventListener("click", e => {
+    e.stopPropagation();
+    changeModalImage("prev");
+  });
+}
 
-modalNext.addEventListener("click", (e) => {
-  e.stopPropagation();
-  changeModalImage("next");
-});
+if (modalNext) {
+  modalNext.addEventListener("click", e => {
+    e.stopPropagation();
+    changeModalImage("next");
+  });
+}
