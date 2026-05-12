@@ -1,4 +1,4 @@
-import { db } from "./firebase.js";
+import { db, auth } from "./firebase.js";
 
 import {
   collection,
@@ -6,14 +6,26 @@ import {
   query,
   where,
   doc,
-  getDoc
+  getDoc,
+  deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const params = new URLSearchParams(window.location.search);
 const uid = params.get("uid");
 
 const followingList =
   document.getElementById("followingList");
+
+let currentUser = null;
+
+onAuthStateChanged(auth, user => {
+  currentUser = user;
+  loadFollowingList();
+});
 
 async function loadFollowingList() {
   if (!uid) {
@@ -51,6 +63,9 @@ async function loadFollowingList() {
     const profile =
       profileSnap.data();
 
+    const canUnfollow =
+      currentUser && currentUser.uid === uid;
+
     const card =
       document.createElement("article");
 
@@ -81,6 +96,16 @@ async function loadFollowingList() {
         >
           プロフィールを見る
         </button>
+
+        ${canUnfollow ? `
+          <button
+            class="delete-btn"
+            onclick="unfollowUser('${followData.followingId}')"
+            style="margin-top:10px;"
+          >
+            フォロー解除
+          </button>
+        ` : ""}
       </div>
     `;
 
@@ -88,4 +113,21 @@ async function loadFollowingList() {
   }
 }
 
-loadFollowingList();
+async function unfollowUser(targetUid) {
+  if (!currentUser) return;
+
+  if (!confirm("フォローを解除しますか？")) {
+    return;
+  }
+
+  const followId =
+    `${currentUser.uid}_${targetUid}`;
+
+  await deleteDoc(
+    doc(db, "follows", followId)
+  );
+
+  await loadFollowingList();
+}
+
+window.unfollowUser = unfollowUser;
