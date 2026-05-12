@@ -47,7 +47,7 @@ function compressIcon(file) {
       const img = new Image();
 
       img.onload = () => {
-        const size = 80;
+        const size = 180;
 
         const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
@@ -71,7 +71,7 @@ function compressIcon(file) {
           size
         );
 
-        resolve(canvas.toDataURL("image/jpeg", 0.25));
+        resolve(canvas.toDataURL("image/jpeg", 0.6));
       };
 
       img.src = e.target.result;
