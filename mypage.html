@@ -33,42 +33,21 @@
     <div class="form-section">
       <h2>ログイン / 会員登録</h2>
 
-      <input
-        id="email"
-        type="email"
-        placeholder="メールアドレス"
-      >
+      <input id="email" type="email" placeholder="メールアドレス">
+      <input id="password" type="password" placeholder="パスワード">
 
-      <input
-        id="password"
-        type="password"
-        placeholder="パスワード"
-      >
-
-      <button
-        type="button"
-        class="main-btn full-btn"
-        id="loginBtn"
-      >
+      <button type="button" class="main-btn full-btn" id="loginBtn">
         ログイン
       </button>
 
-      <button
-        type="button"
-        class="sub-btn full-btn"
-        id="registerBtn"
-      >
+      <button type="button" class="sub-btn full-btn" id="registerBtn">
         新規登録
       </button>
     </div>
 
   </section>
 
-  <section
-    class="form-box"
-    id="myPageArea"
-    style="display:none;"
-  >
+  <section class="form-box" id="myPageArea" style="display:none;">
 
     <div class="login-user-box">
 
@@ -77,27 +56,13 @@
         <span id="loginUserEmail"></span>
       </p>
 
-      <div
-        style="
-          display:flex;
-          gap:10px;
-          flex-wrap:wrap;
-          margin-top:12px;
-        "
-      >
+      <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:12px;">
 
-        <a
-          class="main-btn"
-          href="profile.html"
-        >
+        <a class="main-btn" href="profile.html">
           プロフィール編集
         </a>
 
-        <button
-          type="button"
-          class="sub-btn"
-          id="logoutBtn"
-        >
+        <button type="button" class="sub-btn" id="logoutBtn">
           ログアウト
         </button>
 
@@ -105,15 +70,14 @@
 
     </div>
 
-    <div
-      id="profileSummary"
-      class="profile-summary"
-    ></div>
+    <div id="profileSummary" class="profile-summary"></div>
+
+    <section id="outfitList" class="post-grid"></section>
 
     <div
       class="form-box"
       style="
-        margin:20px 0;
+        margin:40px 0 20px;
         border:1px solid #ffd6d6;
         background:#fff8f8;
       "
@@ -141,11 +105,6 @@
         退会する
       </button>
     </div>
-
-    <section
-      id="outfitList"
-      class="post-grid"
-    ></section>
 
   </section>
 
