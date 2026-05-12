@@ -69,16 +69,7 @@ document.head.appendChild(style);
 
 function getProfileIcon(profile) {
   return (
-    profile.iconUrl ||
-    profile.photoURL ||
-    profile.photoUrl ||
-    profile.profileImage ||
-    profile.profileImageUrl ||
-    profile.avatarUrl ||
-    profile.avatar ||
-    profile.imageUrl ||
-    profile.image ||
-    ""
+profile.iconImage || ""
   );
 }
 
