@@ -9,26 +9,22 @@ import {
   getDoc
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-import {
-  getAuth,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
-const auth = getAuth();
+const params = new URLSearchParams(window.location.search);
+const uid = params.get("uid");
 
 const followingList =
   document.getElementById("followingList");
 
-onAuthStateChanged(auth, async user => {
-  if (!user) {
+async function loadFollowingList() {
+  if (!uid) {
     followingList.innerHTML =
-      `<p class="empty">ログインしてください。</p>`;
+      `<p class="empty">ユーザーが見つかりません。</p>`;
     return;
   }
 
   const q = query(
     collection(db, "follows"),
-    where("followerId", "==", user.uid)
+    where("followerId", "==", uid)
   );
 
   const snap = await getDocs(q);
@@ -67,7 +63,7 @@ onAuthStateChanged(auth, async user => {
           class="user-avatar"
           style="
             margin:0 auto 16px;
-            ${profile.iconImage ? `background-image:url('${profile.iconImage}'); background-size:cover;` : ""}
+            ${profile.iconImage ? `background-image:url('${profile.iconImage}'); background-size:cover; background-position:center;` : ""}
           "
         >
           ${profile.iconImage ? "" : (profile.displayName || "U").slice(0,1)}
@@ -90,4 +86,6 @@ onAuthStateChanged(auth, async user => {
 
     followingList.appendChild(card);
   }
-});
+}
+
+loadFollowingList();
